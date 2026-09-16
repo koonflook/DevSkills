@@ -1,0 +1,114 @@
+# Command reward example:
+# - command: "give <player> diamond 1"
+#   display-name: "Diamond"
+#   amount: 1
+skills:
+  farming:
+    display-name: "Farming"
+    icon:
+      material: WHEAT
+    max-level: 100
+    xp-curve: "100 * level^1.5"
+    rewards:
+      patterns:
+        - { interval: 2, offset: 0, trait: health, amount: 1 }
+        - { interval: 5, offset: 0, trait: luck, amount: 1 }
+      levels:
+        100: [ { message: "skill.farming.maxed" } ]
+  foraging:
+    display-name: "Foraging"
+    icon:
+      material: OAK_LOG
+    max-level: 100
+    xp-curve: "100 * level^1.5"
+    rewards:
+      patterns:
+        - { interval: 2, offset: 0, trait: strength, amount: 1 }
+        - { interval: 5, offset: 0, trait: speed, amount: 1 }
+  mining:
+    display-name: "Mining"
+    icon:
+      material: IRON_PICKAXE
+    max-level: 100
+    xp-curve: "100 * level^1.5"
+    rewards:
+      patterns:
+        - { interval: 2, offset: 0, trait: toughness, amount: 1 }
+        - { interval: 10, offset: 0, trait: strength, amount: 2 }
+      levels:
+        100: [ { message: "skill.mining.maxed" } ]
+  fishing:
+    display-name: "Fishing"
+    icon:
+      material: FISHING_ROD
+    max-level: 100
+    xp-curve: "100 * level^1.5"
+    rewards:
+      patterns:
+        - { interval: 2, offset: 0, trait: luck, amount: 1 }
+  excavation:
+    display-name: "Excavation"
+    icon:
+      material: IRON_SHOVEL
+    max-level: 100
+    xp-curve: "100 * level^1.5"
+    rewards:
+      patterns:
+        - { interval: 2, offset: 0, trait: toughness, amount: 1 }
+  archery:
+    display-name: "Archery"
+    icon:
+      material: BOW
+    max-level: 100
+    xp-curve: "100 * level^1.5"
+    rewards:
+      patterns:
+        - { interval: 2, offset: 0, trait: crit_chance, amount: 1 }
+  defense:
+    display-name: "Defense"
+    icon:
+      material: SHIELD
+    max-level: 100
+    xp-curve: "100 * level^1.5"
+    rewards:
+      patterns:
+        - { interval: 2, offset: 0, trait: health, amount: 1 }
+        - { interval: 5, offset: 0, trait: toughness, amount: 1 }
+  fighting:
+    display-name: "Fighting"
+    icon:
+      material: IRON_SWORD
+    max-level: 100
+    xp-curve: "100 * level^1.5"
+    rewards:
+      patterns:
+        - { interval: 2, offset: 0, trait: strength, amount: 1 }
+        - { interval: 5, offset: 0, trait: crit_damage, amount: 1 }
+  agility:
+    display-name: "Agility"
+    icon:
+      material: FEATHER
+    max-level: 100
+    xp-curve: "100 * level^1.5"
+    rewards:
+      patterns:
+        - { interval: 2, offset: 0, trait: speed, amount: 1 }
+  alchemy:
+    display-name: "Alchemy"
+    icon:
+      material: BREWING_STAND
+    max-level: 100
+    xp-curve: "100 * level^1.5"
+    rewards:
+      patterns:
+        - { interval: 2, offset: 0, trait: regeneration, amount: 1 }
+        - { interval: 5, offset: 0, trait: wisdom, amount: 1 }
+  enchanting:
+    display-name: "Enchanting"
+    icon:
+      material: ENCHANTING_TABLE
+    max-level: 100
+    xp-curve: "100 * level^1.5"
+    rewards:
+      patterns:
+        - { interval: 2, offset: 0, trait: wisdom, amount: 1 }

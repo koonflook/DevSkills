@@ -1,0 +1,61 @@
+version: 2
+
+java:
+  # Normal DevSkills navigation uses inventory menus. AUTO also keeps these
+  # established menus and reserves Dialogs for targeted interactions.
+  # DIALOG remains an explicit experimental override for server owners.
+  renderer: INVENTORY
+
+bedrock:
+  forms-enabled: true
+  page-size: 8
+  # Optional http/https URLs. Example: images.skills.mining: "https://example.com/mining.png"
+  images: {}
+
+text:
+  en:
+    skills:
+      title: "DevSkills"
+      content: "Select a skill (page <page>/<max_page>)"
+      button: "<skill> - Lv <level>/<max_level>"
+    profile:
+      title: "DevSkills Profile"
+      content: "Select a trait (page <page>/<max_page>)"
+      button: "<trait> - Lv <level>"
+    skill:
+      content: "Level: <level>/<max_level>\nXP: <xp>/<xp_required>\n\n<rewards>"
+      reward: "Level <level>: <rewards>"
+    trait:
+      content: "Level: <level>\n\nStats:\n<stats>\nSources:\n<sources>"
+      stat: "<stat>: +<value> per level"
+      source: "<skill>: +<value> <trait>"
+    navigation:
+      previous: "Previous"
+      next: "Next"
+      back: "Back"
+      close: "Close"
+    common:
+      no_rewards: "No upcoming rewards"
+  th:
+    skills:
+      title: "DevSkills"
+      content: "เลือกสกิล (หน้า <page>/<max_page>)"
+      button: "<skill> - เลเวล <level>/<max_level>"
+    profile:
+      title: "โปรไฟล์ DevSkills"
+      content: "เลือกคุณลักษณะ (หน้า <page>/<max_page>)"
+      button: "<trait> - เลเวล <level>"
+    skill:
+      content: "เลเวล: <level>/<max_level>\nEXP: <xp>/<xp_required>\n\n<rewards>"
+      reward: "เลเวล <level>: <rewards>"
+    trait:
+      content: "เลเวล: <level>\n\nค่าสถานะ:\n<stats>\nที่มา:\n<sources>"
+      stat: "<stat>: +<value> ต่อเลเวล"
+      source: "<skill>: +<value> <trait>"
+    navigation:
+      previous: "ก่อนหน้า"
+      next: "ถัดไป"
+      back: "กลับ"
+      close: "ปิด"
+    common:
+      no_rewards: "ไม่มีรางวัลถัดไป"

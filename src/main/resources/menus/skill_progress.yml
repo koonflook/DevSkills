@@ -1,0 +1,75 @@
+title: "<green><skill> <dark_gray>(<page>/<max_page>)"
+size: 54
+fill:
+  icon:
+    material: BLACK_STAINED_GLASS_PANE
+  name: " "
+items:
+  summary:
+    slot: 4
+    icon:
+      material: EXPERIENCE_BOTTLE
+    name: "<green><skill>"
+    lore:
+      - "<gray>Level: <white><level>/<max_level></white>"
+      - "<gray>XP: <white><xp>/<xp_required></white>"
+      - "<gray><progress_bar> <xp_percent>%</gray>"
+    action: none
+  previous-page:
+    slot: 45
+    icon:
+      material: ARROW
+    name: "<yellow>Previous Page"
+    lore:
+      - "<gray>Page <page>/<max_page>"
+    action: previous-page
+  back:
+    slot: 49
+    icon:
+      material: BARRIER
+    name: "<yellow>Back"
+    action: open-skills
+  next-page:
+    slot: 53
+    icon:
+      material: ARROW
+    name: "<yellow>Next Page"
+    lore:
+      - "<gray>Page <page>/<max_page>"
+    action: next-page
+templates:
+  road:
+    slots: [10, 11, 12, 13, 14, 15, 16, 25, 24, 23, 22, 21, 20, 19, 28, 29, 30, 31, 32, 33, 34, 43, 42, 41, 40, 39, 38, 37]
+    icon:
+      material: LIME_STAINED_GLASS_PANE
+    name: "<green>Level <level>"
+    lore:
+      - "<gray>Status: <white><status></white>"
+      - "<reward_lines>"
+    action: none
+  completed:
+    icon:
+      material: LIME_STAINED_GLASS_PANE
+    name: "<green>Level <level>"
+    lore:
+      - "<gray>Status: <green><status></green>"
+      - "<gray>Progress: <white><level_progress>%</white>"
+      - "<reward_lines>"
+    action: none
+  current:
+    icon:
+      material: EXPERIENCE_BOTTLE
+    name: "<yellow>Level <level>"
+    lore:
+      - "<gray>Status: <yellow><status></yellow>"
+      - "<gray>Progress: <white><level_progress>%</white>"
+      - "<reward_lines>"
+    action: none
+  locked:
+    icon:
+      material: GRAY_STAINED_GLASS_PANE
+    name: "<dark_gray>Level <level>"
+    lore:
+      - "<gray>Status: <dark_gray><status></dark_gray>"
+      - "<reward_lines>"
+    action: none

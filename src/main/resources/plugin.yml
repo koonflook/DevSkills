@@ -1,0 +1,31 @@
+name: DevSkills
+version: '${version}'
+main: com.Teenkung.devSkills.DevSkills
+api-version: '26.1.2'
+load: POSTWORLD
+authors: [ Teenkung123 ]
+depend: [ MythicLib ]
+softdepend: [ Geyser-Spigot, floodgate, PlaceholderAPI, ProtocolLib ]
+commands:
+  devskill:
+    description: DevSkills command.
+    aliases: [ ds ]
+  skill:
+    description: Opens a DevSkills skill menu.
+  skills:
+    description: Opens the DevSkills skills menu.
+permissions:
+  devskill.use:
+    description: Allows player DevSkills commands.
+    default: true
+  devskill.admin:
+    description: Allows DevSkills admin commands.
+    default: op
+    children:
+      devskill.admin.booster: true
+  devskill.admin.booster:
+    description: Allows management of DevSkills EXP boosters.
+    default: op
+  devskill.bypass.cooldown:
+    description: Reserved cooldown bypass permission.
+    default: op

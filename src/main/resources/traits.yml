@@ -1,0 +1,105 @@
+traits:
+  strength:
+    display-name: "Strength"
+    icon:
+      material: IRON_SWORD
+    base-level: 0
+    max-level: null
+    stats:
+      ATTACK_DAMAGE:
+        display-name: "Attack Damage"
+        per-level: 1.0
+        type: FLAT
+      ATTACK_SPEED:
+        display-name: "Attack Speed"
+        per-level: 0.02
+        type: FLAT
+  health:
+    display-name: "Health"
+    icon:
+      material: RED_DYE
+    base-level: 0
+    max-level: 200
+    stats:
+      MAX_HEALTH:
+        display-name: "Max Health"
+        per-level: 1.0
+        type: FLAT
+  regeneration:
+    display-name: "Regeneration"
+    icon:
+      material: GHAST_TEAR
+    base-level: 0
+    max-level: 100
+    stats:
+      HEALTH_REGENERATION:
+        display-name: "Health Regeneration"
+        per-level: 0.05
+        type: FLAT
+  luck:
+    display-name: "Luck"
+    icon:
+      material: EMERALD
+    base-level: 0
+    max-level: 100
+    stats:
+      LUCK:
+        display-name: "Luck"
+        per-level: 0.25
+        type: FLAT
+  wisdom:
+    display-name: "Wisdom"
+    icon:
+      material: BOOK
+    base-level: 0
+    max-level: 100
+    xp-multiplier-per-level: 0.002
+    stats:
+      COOLDOWN_REDUCTION:
+        display-name: "Cooldown Reduction"
+        per-level: 0.05
+        type: FLAT
+  toughness:
+    display-name: "Toughness"
+    icon:
+      material: SHIELD
+    base-level: 0
+    max-level: 200
+    stats:
+      DAMAGE_REDUCTION:
+        display-name: "Damage Reduction"
+        per-level: 0.05
+        type: FLAT
+  crit_chance:
+    display-name: "Critical Chance"
+    icon:
+      material: TARGET
+    base-level: 0
+    max-level: 100
+    stats:
+      CRITICAL_STRIKE_CHANCE:
+        display-name: "Critical Strike Chance"
+        per-level: 0.5
+        type: FLAT
+  crit_damage:
+    display-name: "Critical Damage"
+    icon:
+      material: NETHERITE_AXE
+    base-level: 0
+    max-level: 100
+    stats:
+      CRITICAL_STRIKE_POWER:
+        display-name: "Critical Strike Power"
+        per-level: 0.75
+        type: FLAT
+  speed:
+    display-name: "Speed"
+    icon:
+      material: FEATHER
+    base-level: 0
+    max-level: 100
+    stats:
+      MOVEMENT_SPEED:
+        display-name: "Movement Speed"
+        per-level: 0.001
+        type: FLAT

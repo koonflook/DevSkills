@@ -1,0 +1,124 @@
+farming:
+  block:
+    DEFAULT: 1.5
+    WHEAT: 2.0
+    CARROTS: 2.0
+    POTATOES: 2.0
+    BEETROOTS: 2.0
+    NETHER_WART: 3.0
+    COCOA: 3.0
+    MELON: 1.5
+    PUMPKIN: 1.5
+    SUGAR_CANE: 1.5
+    CACTUS: 1.5
+    BAMBOO: 1.0
+    KELP: 1.0
+    KELP_PLANT: 1.0
+    SWEET_BERRY_BUSH: 2.0
+    TORCHFLOWER_CROP: 3.0
+    PITCHER_CROP: 3.0
+foraging:
+  block:
+    DEFAULT: 1.5
+    OAK_LOG: 2.0
+    SPRUCE_LOG: 2.0
+    BIRCH_LOG: 2.0
+    JUNGLE_LOG: 2.0
+    ACACIA_LOG: 2.0
+    DARK_OAK_LOG: 2.0
+    MANGROVE_LOG: 2.5
+    CHERRY_LOG: 2.5
+    PALE_OAK_LOG: 2.5
+    CRIMSON_STEM: 2.5
+    WARPED_STEM: 2.5
+    MANGROVE_ROOTS: 2.0
+    MUDDY_MANGROVE_ROOTS: 2.0
+    BAMBOO_BLOCK: 2.0
+mining:
+  block:
+    DEFAULT: 1.0
+    STONE: 1.0
+    DEEPSLATE: 1.2
+    COAL_ORE: 3.0
+    IRON_ORE: 4.0
+    GOLD_ORE: 5.0
+    REDSTONE_ORE: 4.0
+    LAPIS_ORE: 4.0
+    DIAMOND_ORE: 8.0
+    EMERALD_ORE: 10.0
+    COPPER_ORE: 3.0
+    NETHER_GOLD_ORE: 4.0
+    NETHER_QUARTZ_ORE: 3.0
+    DEEPSLATE_COAL_ORE: 4.0
+    DEEPSLATE_IRON_ORE: 5.0
+    DEEPSLATE_COPPER_ORE: 4.0
+    DEEPSLATE_GOLD_ORE: 6.0
+    DEEPSLATE_REDSTONE_ORE: 5.0
+    DEEPSLATE_LAPIS_ORE: 5.0
+    DEEPSLATE_DIAMOND_ORE: 10.0
+    DEEPSLATE_EMERALD_ORE: 12.0
+    ANCIENT_DEBRIS: 15.0
+    AMETHYST_CLUSTER: 4.0
+excavation:
+  block:
+    DEFAULT: 1.0
+    DIRT: 1.0
+    COARSE_DIRT: 1.0
+    ROOTED_DIRT: 1.2
+    GRASS_BLOCK: 1.0
+    SAND: 1.0
+    RED_SAND: 1.0
+    GRAVEL: 1.0
+    CLAY: 1.4
+    PODZOL: 1.2
+    MYCELIUM: 1.2
+    MUD: 1.1
+    SOUL_SAND: 1.2
+    SOUL_SOIL: 1.2
+    SNOW_BLOCK: 1.0
+    POWDER_SNOW: 1.0
+fishing:
+  fish:
+    DEFAULT: 1.0
+    FISH: 4.0
+    COD: 4.0
+    SALMON: 5.0
+    TROPICAL_FISH: 7.0
+    PUFFERFISH: 7.0
+    TREASURE: 15.0
+    JUNK: 2.0
+fighting:
+  entity:
+    DEFAULT: 1.5
+    ZOMBIE: 2.0
+    SKELETON: 2.0
+    CREEPER: 3.0
+    SPIDER: 2.0
+    ENDERMAN: 6.0
+    WARDEN: 50.0
+archery:
+  entity:
+    DEFAULT: 2.0
+defense:
+  entity:
+    DEFAULT: 1.5
+  damage:
+    DEFAULT: 1.0
+    FALL: 1.5
+    FIRE: 1.0
+    FIRE_TICK: 1.0
+    LAVA: 1.5
+    POISON: 1.0
+    WITHER: 1.5
+    FREEZE: 1.0
+    DROWNING: 1.0
+    SUFFOCATION: 1.0
+alchemy:
+  brew:
+    DEFAULT: 8.0
+enchanting:
+  enchant:
+    DEFAULT: 2.0
+agility:
+  movement:
+    DEFAULT: 1.0

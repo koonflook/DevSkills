@@ -1,0 +1,44 @@
+prefix: "<gradient:#43d37f:#4ea1ff><bold>DevSkills</bold></gradient><gray> › </gray>"
+plugin:
+  reloaded: "<prefix><green>Configuration reloaded."
+  reload-failed: "<prefix><red>Reload failed; the previous runtime is still active: <white><error></white>"
+  no-permission: "<prefix><red>You do not have permission."
+  player-only: "<prefix><red>This command requires a player."
+  profile-loading: "<prefix><yellow>Your profile is still loading."
+  unknown-skill: "<prefix><red>Unknown skill: <white><skill></white>."
+  unknown-trait: "<prefix><red>Unknown trait: <white><trait></white>."
+  invalid-number: "<prefix><red>Invalid number: <white><value></white>."
+  admin-success: "<prefix><green>Updated <white><player></white>."
+  admin-usage: "<prefix><yellow>Usage: <white><usage></white>"
+  toggle: "<prefix><green><setting> is now <white><value></white>."
+xp:
+  actionbar: "<green>+<amount> <skill> XP</green> <gray>[<progress_bar>] <xp_percent>%</gray>"
+  bossbar: "<skill>: <level>/<max_level> - <xp_percent>%"
+level:
+  chat: "<prefix><gold><skill></gold> leveled up to <yellow><level></yellow>!"
+  bossbar: "<skill> Level <level>"
+reward:
+  trait: "<prefix><green>+<amount> <trait></green>"
+booster:
+  activated: "<prefix><green>Activated <white><label></white> (<yellow>x<multiplier></yellow>) as <scope> booster. ID: <gray><id></gray>"
+  removed: "<prefix><green>Removed booster <white><id></white>."
+  not-found: "<prefix><red>No booster matches <white><id></white>."
+  ambiguous: "<prefix><red>Booster prefix <white><id></white> is ambiguous; use more characters."
+  list-header: "<prefix><gold>Active EXP boosters (<count>):"
+  list-entry: "<gray>- <white><id></white> <label> <yellow>x<multiplier></yellow> <scope> <aqua><remaining></aqua>"
+  list-empty: "<prefix><yellow>No matching EXP boosters are active."
+  invalid-duration: "<prefix><red>Invalid duration <white><value></white>. Use a positive number followed by s, m, h, or d, or permanent."
+  invalid-multiplier: "<prefix><red>Multiplier must be a finite number greater than 1.0."
+  invalid-label: "<prefix><red>Booster labels cannot exceed 255 characters."
+  player-not-found: "<prefix><red>No online or previously known player matches <white><player></white>."
+  storage-failed: "<prefix><red>The booster change could not be saved. Check the server log."
+skill:
+  farming:
+    maxed: "<prefix><gold>Farming mastered."
+  mining:
+    maxed: "<prefix><gold>Mining mastered."
+gui:
+  close: "<red>Close"
+  back: "<yellow>Back"
+  next-page: "<green>Next Page"
+  previous-page: "<green>Previous Page"

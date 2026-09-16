@@ -1,0 +1,44 @@
+prefix: "<gradient:#43d37f:#4ea1ff><bold>DevSkills</bold></gradient><gray> › </gray>"
+plugin:
+  reloaded: "<prefix><green>รีโหลดการตั้งค่าแล้ว"
+  reload-failed: "<prefix><red>รีโหลดไม่สำเร็จ ระบบเดิมยังทำงานอยู่: <white><error></white>"
+  no-permission: "<prefix><red>คุณไม่มีสิทธิ์ใช้คำสั่งนี้"
+  player-only: "<prefix><red>คำสั่งนี้ใช้ได้เฉพาะผู้เล่น"
+  profile-loading: "<prefix><yellow>กำลังโหลดโปรไฟล์ของคุณ"
+  unknown-skill: "<prefix><red>ไม่พบสกิล: <white><skill></white>"
+  unknown-trait: "<prefix><red>ไม่พบคุณลักษณะ: <white><trait></white>"
+  invalid-number: "<prefix><red>ตัวเลขไม่ถูกต้อง: <white><value></white>"
+  admin-success: "<prefix><green>อัปเดต <white><player></white> แล้ว"
+  admin-usage: "<prefix><yellow>วิธีใช้: <white><usage></white>"
+  toggle: "<prefix><green><setting> เป็น <white><value></white> แล้ว"
+xp:
+  actionbar: "<green>+<amount> <skill> XP</green> <gray>[<progress_bar>] <xp_percent>%</gray>"
+  bossbar: "<skill>: <level>/<max_level> - <xp_percent>%"
+level:
+  chat: "<prefix><gold><skill></gold> level <yellow><level></yellow>!"
+  bossbar: "<skill> Level <level>"
+reward:
+  trait: "<prefix><green>+<amount> <trait></green>"
+booster:
+  activated: "<prefix><green>เปิดใช้ <white><label></white> (<yellow>x<multiplier></yellow>) ขอบเขต <scope> แล้ว ID: <gray><id></gray>"
+  removed: "<prefix><green>ลบบูสเตอร์ <white><id></white> แล้ว"
+  not-found: "<prefix><red>ไม่พบบูสเตอร์ที่ตรงกับ <white><id></white>"
+  ambiguous: "<prefix><red>คำนำหน้า <white><id></white> ตรงกับหลายบูสเตอร์ โปรดระบุเพิ่ม"
+  list-header: "<prefix><gold>บูสเตอร์ EXP ที่กำลังทำงาน (<count>):"
+  list-entry: "<gray>- <white><id></white> <label> <yellow>x<multiplier></yellow> <scope> <aqua><remaining></aqua>"
+  list-empty: "<prefix><yellow>ไม่มีบูสเตอร์ EXP ที่ตรงกับตัวกรอง"
+  invalid-duration: "<prefix><red>ระยะเวลา <white><value></white> ไม่ถูกต้อง ใช้ตัวเลขบวกตามด้วย s, m, h หรือ d หรือใช้ permanent"
+  invalid-multiplier: "<prefix><red>ตัวคูณต้องเป็นตัวเลขที่มากกว่า 1.0 และมีค่าจำกัด"
+  invalid-label: "<prefix><red>ชื่อบูสเตอร์ต้องยาวไม่เกิน 255 ตัวอักษร"
+  player-not-found: "<prefix><red>ไม่พบผู้เล่นออนไลน์หรือผู้เล่นที่เคยบันทึกชื่อ <white><player></white>"
+  storage-failed: "<prefix><red>บันทึกการเปลี่ยนแปลงบูสเตอร์ไม่สำเร็จ โปรดตรวจสอบล็อกเซิร์ฟเวอร์"
+skill:
+  farming:
+    maxed: "<prefix><gold>Farming mastered."
+  mining:
+    maxed: "<prefix><gold>Mining mastered."
+gui:
+  close: "<red>Close"
+  back: "<yellow>Back"
+  next-page: "<green>Next Page"
+  previous-page: "<green>Previous Page"

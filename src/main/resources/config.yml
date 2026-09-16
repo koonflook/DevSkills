@@ -1,0 +1,36 @@
+storage:
+  type: sqlite
+  sqlite-file: devskills.db
+  mysql:
+    host: localhost
+    port: 3306
+    database: devskills
+    username: root
+    password: ""
+    use-ssl: false
+    pool-size: 10
+
+settings:
+  debug: false
+  flush-interval-seconds: 60
+  ignore-creative: true
+  enabled-worlds: []
+  disabled-worlds: []
+  multiplier-permissions:
+    enabled: true
+    prefix: devskill.multiplier.
+    default: 1.0
+  feedback:
+    exp-actionbar: true
+    exp-bossbar: true
+    level-chat: true
+    level-bossbar: true
+    throttle-millis: 250
+    bossbar-seconds: 4
+  anti-abuse:
+    placed-block-cap-per-chunk: 4096
+    farming-non-ageable-allowed: true
+    agility-min-distance: 8.0
+    agility-award-seconds: 1
+    agility-xp: 1.0
+    defense-environmental: true

@@ -1,0 +1,39 @@
+title: "<green>DevSkills Profile"
+size: 54
+fill:
+  icon:
+    material: BLACK_STAINED_GLASS_PANE
+  name: " "
+items:
+  previous-page:
+    slot: 45
+    icon:
+      material: ARROW
+    name: "<green>Previous Page"
+    lore: []
+    action: previous-page
+  next-page:
+    slot: 53
+    icon:
+      material: ARROW
+    name: "<green>Next Page"
+    lore: []
+    action: next-page
+  skills:
+    slot: 49
+    icon:
+      material: BOOK
+    name: "<green>Skills"
+    lore:
+      - "<gray>Open skills overview."
+    action: open-skills
+templates:
+  trait:
+    slots: [10, 11, 12, 13, 14, 15, 16, 19, 20]
+    icon:
+      material: NETHER_STAR
+    name: "<green><trait>"
+    lore:
+      - "<gray>Level: <white><trait_level></white>"
+      - "<stat_lines>"
+    action: open-trait

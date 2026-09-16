@@ -1,0 +1,36 @@
+sounds:
+  exp-gain:
+    enabled: true
+    sound: minecraft:entity.experience_orb.pickup
+    volume: 0.25
+    pitch: 1.6
+  level-up:
+    enabled: true
+    sound: minecraft:entity.player.levelup
+    volume: 0.8
+    pitch: 1.0
+  reward:
+    enabled: true
+    sound: minecraft:block.amethyst_block.chime
+    volume: 0.7
+    pitch: 1.2
+  gui-open:
+    enabled: true
+    sound: minecraft:block.note_block.hat
+    volume: 0.3
+    pitch: 1.3
+  gui-click:
+    enabled: true
+    sound: minecraft:ui.button.click
+    volume: 0.4
+    pitch: 1.0
+  gui-close:
+    enabled: false
+    sound: minecraft:block.chest.close
+    volume: 0.4
+    pitch: 1.0
+  error:
+    enabled: true
+    sound: minecraft:block.note_block.bass
+    volume: 0.5
+    pitch: 0.6

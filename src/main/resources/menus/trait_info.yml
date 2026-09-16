@@ -1,0 +1,31 @@
+title: "<green><trait>"
+size: 45
+fill:
+  icon:
+    material: BLACK_STAINED_GLASS_PANE
+  name: " "
+items:
+  back:
+    slot: 40
+    icon:
+      material: ARROW
+    name: "<yellow>Back"
+    action: open-profile
+templates:
+  stat:
+    slots: [10, 11, 12, 13, 14, 15, 16]
+    icon:
+      material: PAPER
+    name: "<green><stat>"
+    lore:
+      - "<gray>Effect per level: <white><value></white>"
+    action: none
+  source:
+    slots: [28, 29, 30, 31, 32, 33, 34]
+    icon:
+      material: EXPERIENCE_BOTTLE
+    name: "<green><source>"
+    lore:
+      - "<gray>Contribution: <white>+<contribution> <trait></white>"
+      - "<gray>Level: <white><source_level>/<source_max_level></white>"
+    action: open-skill

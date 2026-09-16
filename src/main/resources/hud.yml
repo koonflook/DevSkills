@@ -1,0 +1,19 @@
+version: 1
+
+enabled: true
+refresh-ticks: 20
+unresolved-placeholder: "N/A"
+
+action-bar:
+  format: "<red>❤ <health>/<max_health> <dark_gray>| <aqua>🛡 <defense> <dark_gray>| <gold>Lv %mmocore_level% <gray>(%mmocore_experience%/%mmocore_next_level%, %mmocore_level_percent%%)"
+  # When ProtocolLib is available, action bars sent by another plugin pause this HUD.
+  external-hold-ticks: 60
+  # Used by XP feedback unless its caller supplies a different duration.
+  transient-ticks: 40
+
+booster-boss-bar:
+  enabled: true
+  rotation-ticks: 60
+  format: "<gold><booster_label> <yellow>x<booster_multiplier> <gray><booster_scope> (<remaining>) <dark_gray>[<index>/<count>] <aqua>Combined x<combined_multiplier>"
+  color: PURPLE
+  overlay: PROGRESS

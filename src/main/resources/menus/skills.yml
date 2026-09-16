@@ -1,0 +1,40 @@
+title: "<green>DevSkills"
+size: 54
+fill:
+  icon:
+    material: BLACK_STAINED_GLASS_PANE
+  name: " "
+items:
+  previous-page:
+    slot: 45
+    icon:
+      material: ARROW
+    name: "<green>Previous Page"
+    lore: []
+    action: previous-page
+  next-page:
+    slot: 53
+    icon:
+      material: ARROW
+    name: "<green>Next Page"
+    lore: []
+    action: next-page
+  profile:
+    slot: 49
+    icon:
+      material: PLAYER_HEAD
+    name: "<green>Profile"
+    lore:
+      - "<gray>Open trait profile."
+    action: open-profile
+templates:
+  skill:
+    slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22]
+    icon:
+      material: EXPERIENCE_BOTTLE
+    name: "<green><skill>"
+    lore:
+      - "<gray>Level: <white><level>/<max_level></white>"
+      - "<gray>XP: <white><xp>/<xp_required></white>"
+      - "<gray><progress_bar> <xp_percent>%</gray>"
+    action: open-skill
