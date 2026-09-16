@@ -12,6 +12,7 @@ import com.Teenkung.devSkills.config.SoundManager;
 import com.Teenkung.devSkills.config.UiConfig;
 import com.Teenkung.devSkills.domain.skill.Reward;
 import com.Teenkung.devSkills.domain.skill.Skill;
+import com.Teenkung.devSkills.domain.source.SourceCategory;
 import com.Teenkung.devSkills.domain.trait.StatMapping;
 import com.Teenkung.devSkills.domain.trait.Trait;
 import com.Teenkung.devSkills.domain.user.UserProfile;
@@ -20,12 +21,14 @@ import com.Teenkung.devSkills.integration.FloodgateBridge;
 import com.Teenkung.devSkills.integration.PaperDialogBridge;
 import com.Teenkung.devSkills.integration.PlaceholderApiBridge;
 import com.Teenkung.devSkills.service.LevelerService;
+import com.Teenkung.devSkills.service.SourceInfoService;
 import com.Teenkung.devSkills.service.TraitService;
 import com.Teenkung.devSkills.util.DisplayNames;
 import com.Teenkung.devSkills.util.MenuPages;
 import com.Teenkung.devSkills.util.MiniMessageUtil;
 import com.Teenkung.devSkills.util.ProgressBar;
 import com.Teenkung.devSkills.util.RewardDisplay;
+import com.Teenkung.devSkills.util.SourceDisplay;
 import com.Teenkung.devSkills.util.TraitContributions;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -33,6 +36,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -59,6 +63,7 @@ public final class MenuManager implements Listener {
     private final MessageManager messageManager;
     private final SoundManager soundManager;
     private final LevelerService levelerService;
+    private final SourceInfoService sourceInfoService;
     private final TraitService traitService;
     private final FloodgateBridge floodgateBridge;
     private final CumulusFormBridge cumulusFormBridge;
@@ -76,6 +81,7 @@ public final class MenuManager implements Listener {
         this.messageManager = messageManager;
         this.soundManager = soundManager;
         this.levelerService = levelerService;
+        this.sourceInfoService = new SourceInfoService(configManager.sources());
         this.traitService = traitService;
         this.floodgateBridge = floodgateBridge;
         this.cumulusFormBridge = cumulusFormBridge;
@@ -207,6 +213,8 @@ public final class MenuManager implements Listener {
         Map<String, String> basePlaceholders = skillPlaceholders(skill, profile);
         basePlaceholders.put("page", String.valueOf(boundedPage + 1));
         basePlaceholders.put("max_page", String.valueOf(maxPage + 1));
+        basePlaceholders.put("source_button", uiConfig.text(profile.settings().locale(), "source.button", Map.of()));
+        basePlaceholders.put("source_button_lore", uiConfig.text(profile.settings().locale(), "source.button_lore", Map.of()));
         MenuHolder holder = new MenuHolder("skill:" + skillId + ":" + boundedPage);
         Inventory inventory = create(player, holder, config, basePlaceholders);
         double xp = profile.xp(skill.id());
@@ -232,6 +240,7 @@ public final class MenuManager implements Listener {
         Map<String, MenuAction> overrides = new HashMap<>();
         overrides.put("previous-page", new MenuAction("open-skill-page", skill.id() + ":" + (boundedPage - 1)));
         overrides.put("next-page", new MenuAction("open-skill-page", skill.id() + ":" + (boundedPage + 1)));
+        overrides.put("sources", new MenuAction("open-sources", skill.id() + ":" + boundedPage));
         overrides.put("back", new MenuAction("open-skills", ""));
         Set<String> hidden = new HashSet<>();
         if (boundedPage <= 0) {
@@ -245,6 +254,67 @@ public final class MenuManager implements Listener {
         if (summary != null && summary.slot() >= 0 && summary.slot() < config.size()) {
             inventory.setItem(summary.slot(), item(player, skill.icon(), summary.name(), summary.lore(), basePlaceholders, Map.of()));
         }
+        player.openInventory(inventory);
+        soundManager.play(player, profile, "gui-open");
+    }
+
+    public void openSourceInfo(Player player, UserProfile profile, String skillId, int parentPage) {
+        openSourceInfo(player, profile, skillId, parentPage, 0);
+    }
+
+    public void openSourceInfo(Player player, UserProfile profile, String skillId, int parentPage, int requestedPage) {
+        if (tryOpenBedrockForm(player, () -> cumulusFormBridge.openSourceInfo(player, profile, skillId, parentPage, requestedPage))) {
+            return;
+        }
+        Skill skill = configManager.skills().get(skillId);
+        if (skill == null) {
+            return;
+        }
+        if (tryOpenSourceDialog(player, profile, skill, parentPage, requestedPage)) {
+            return;
+        }
+        MenuConfig config = configManager.menus().get("source_info");
+        if (config == null) {
+            return;
+        }
+        MenuTemplateConfig entryTemplate = config.template("entry");
+        List<SourceInfoService.SourceEntry> entries = sourceInfoService.entries(skill.id());
+        int pageSize = Math.max(1, entryTemplate == null ? 1 : entryTemplate.slots().size());
+        int maxPage = MenuPages.maxPage(entries.size(), pageSize);
+        int page = MenuPages.clampPage(requestedPage, entries.size(), pageSize);
+        String locale = profile.settings().locale();
+        Map<String, String> basePlaceholders = sourcePlaceholders(skill, profile, locale, page, maxPage);
+        MenuHolder holder = new MenuHolder("source:" + skill.id() + ":" + parentPage + ":" + page);
+        Inventory inventory = create(player, holder, config, basePlaceholders);
+        if (entryTemplate != null) {
+            int from = Math.min(entries.size(), page * pageSize);
+            List<SourceInfoService.SourceEntry> visible = entries.subList(from, Math.min(entries.size(), from + pageSize));
+            for (int index = 0; index < visible.size(); index++) {
+                SourceInfoService.SourceEntry entry = visible.get(index);
+                Map<String, String> placeholders = new LinkedHashMap<>(basePlaceholders);
+                placeholders.put("category", sourceCategory(locale, entry.category()));
+                placeholders.put("key", SourceDisplay.key(uiConfig, locale, entry.category(), entry.key()));
+                placeholders.put("value", NUMBER_FORMAT.format(entry.amount()));
+                placeholders.put("behavior", uiConfig.text(locale, entry.behaviorKey(), Map.of()));
+                placeholders.put("formula", uiConfig.text(locale, entry.formulaKey(), Map.of()));
+                inventory.setItem(entryTemplate.slots().get(index), templateItem(player, entryTemplate, sourceIcon(entry), placeholders, Map.of()));
+            }
+        }
+        Map<String, MenuAction> overrides = new HashMap<>();
+        overrides.put("previous-page", new MenuAction("open-sources-page", sourceTarget(skill.id(), parentPage, page - 1)));
+        overrides.put("next-page", new MenuAction("open-sources-page", sourceTarget(skill.id(), parentPage, page + 1)));
+        overrides.put("back", new MenuAction("open-skill-page", skill.id() + ":" + parentPage));
+        Set<String> hidden = new HashSet<>();
+        if (page <= 0) {
+            hidden.add("previous-page");
+        }
+        if (page >= maxPage) {
+            hidden.add("next-page");
+        }
+        if (!entries.isEmpty()) {
+            hidden.add("empty");
+        }
+        applyStaticItems(player, inventory, holder, config, basePlaceholders, Map.of(), overrides, hidden);
         player.openInventory(inventory);
         soundManager.play(player, profile, "gui-open");
     }
@@ -352,6 +422,8 @@ public final class MenuManager implements Listener {
             case "open-profile-page" -> openOverviewPage(player, profile, action.target(), false);
             case "open-skill" -> openSkill(player, profile, action.target());
             case "open-skill-page" -> openSkillPage(player, profile, action.target());
+            case "open-sources" -> openSourceTarget(player, profile, action.target());
+            case "open-sources-page" -> openSourcePageTarget(player, profile, action.target());
             case "open-trait" -> openTrait(player, profile, action.target());
             default -> {
             }
@@ -377,6 +449,28 @@ public final class MenuManager implements Listener {
         }
         try {
             openSkill(player, profile, parts[0], Integer.parseInt(parts[1]));
+        } catch (NumberFormatException ignored) {
+        }
+    }
+
+    private void openSourceTarget(Player player, UserProfile profile, String target) {
+        String[] parts = target.split(":", 2);
+        if (parts.length != 2) {
+            return;
+        }
+        try {
+            openSourceInfo(player, profile, parts[0], Integer.parseInt(parts[1]));
+        } catch (NumberFormatException ignored) {
+        }
+    }
+
+    private void openSourcePageTarget(Player player, UserProfile profile, String target) {
+        String[] parts = target.split(":", 3);
+        if (parts.length != 3) {
+            return;
+        }
+        try {
+            openSourceInfo(player, profile, parts[0], Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
         } catch (NumberFormatException ignored) {
         }
     }
@@ -490,12 +584,58 @@ public final class MenuManager implements Listener {
         if (page < maxPage) {
             buttons.add(dialogButton(player, profile.settings().locale(), "navigation.next", "open-skill-page", skill.id(), page + 1));
         }
+        buttons.add(dialogButton(player, profile.settings().locale(), "source.button", "open-sources", skill.id(), page));
         buttons.add(dialogButton(player, profile.settings().locale(), "navigation.back", "open-skills", "", 0));
         return paperDialogBridge.open(player, new PaperDialogBridge.DialogView(
                 render(player, skill.displayName(), Map.of()),
                 ui(player, profile.settings().locale(), "skill.content", contentPlaceholders),
                 buttons,
                 ui(player, profile.settings().locale(), "navigation.close", Map.of()),
+                3
+        ));
+    }
+
+    private boolean tryOpenSourceDialog(Player player, UserProfile profile, Skill skill, int parentPage, int requestedPage) {
+        if (!dialogEnabled()) {
+            return false;
+        }
+        String locale = profile.settings().locale();
+        List<SourceInfoService.SourceEntry> entries = sourceInfoService.entries(skill.id());
+        int pageSize = Math.max(1, uiConfig.bedrockPageSize());
+        int maxPage = MenuPages.maxPage(entries.size(), pageSize);
+        int page = MenuPages.clampPage(requestedPage, entries.size(), pageSize);
+        int from = Math.min(entries.size(), page * pageSize);
+        List<String> rows = new ArrayList<>();
+        for (SourceInfoService.SourceEntry entry : entries.subList(from, Math.min(entries.size(), from + pageSize))) {
+            rows.add(uiConfig.text(locale, "source.entry", sourceEntryPlaceholders(locale, entry)));
+        }
+        if (rows.isEmpty()) {
+            rows.add(uiConfig.text(locale, "source.no_sources", Map.of()));
+        }
+        Map<String, String> contentPlaceholders = Map.of(
+                "skill", skill.displayName(),
+                "page", String.valueOf(page + 1),
+                "max_page", String.valueOf(maxPage + 1),
+                "rows", String.join("\n", rows),
+                "multiplier", uiConfig.text(locale, "source.multiplier", Map.of())
+        );
+        List<PaperDialogBridge.DialogButton> buttons = new ArrayList<>();
+        if (page > 0) {
+            buttons.add(dialogButton(player, locale, "navigation.previous", "open-sources-page", skill.id() + ":" + parentPage, page - 1));
+        }
+        if (page < maxPage) {
+            buttons.add(dialogButton(player, locale, "navigation.next", "open-sources-page", skill.id() + ":" + parentPage, page + 1));
+        }
+        buttons.add(dialogButton(player, locale, "navigation.back", "open-skill-page", skill.id(), parentPage));
+        return paperDialogBridge.open(player, new PaperDialogBridge.DialogView(
+                ui(player, locale, "source.title", Map.of(
+                        "skill", skill.displayName(),
+                        "page", String.valueOf(page + 1),
+                        "max_page", String.valueOf(maxPage + 1)
+                )),
+                ui(player, locale, "source.content", contentPlaceholders),
+                buttons,
+                ui(player, locale, "navigation.close", Map.of()),
                 3
         ));
     }
@@ -566,11 +706,24 @@ public final class MenuManager implements Listener {
                 case "open-profile-page" -> currentMenus.openProfilePage(currentPlayer, currentProfile, page);
                 case "open-skill" -> currentMenus.openSkill(currentPlayer, currentProfile, target);
                 case "open-skill-page" -> currentMenus.openSkill(currentPlayer, currentProfile, target, page);
+                case "open-sources" -> currentMenus.openSourceInfo(currentPlayer, currentProfile, target, page);
+                case "open-sources-page" -> openSourceDialogTarget(currentMenus, currentPlayer, currentProfile, target, page);
                 case "open-trait" -> currentMenus.openTrait(currentPlayer, currentProfile, target);
                 default -> {
                 }
             }
         });
+    }
+
+    private void openSourceDialogTarget(MenuManager menus, Player player, UserProfile profile, String target, int page) {
+        String[] parts = target.split(":", 2);
+        if (parts.length != 2) {
+            return;
+        }
+        try {
+            menus.openSourceInfo(player, profile, parts[0], Integer.parseInt(parts[1]), page);
+        } catch (NumberFormatException ignored) {
+        }
     }
 
     private boolean dialogEnabled() {
@@ -704,6 +857,72 @@ public final class MenuManager implements Listener {
         placeholders.put("trait_id", trait.id());
         placeholders.put("trait_level", String.valueOf(traitService.traitLevel(profile, trait.id())));
         return placeholders;
+    }
+
+    private Map<String, String> sourcePlaceholders(Skill skill, UserProfile profile, String locale, int page, int maxPage) {
+        Map<String, String> placeholders = skillPlaceholders(skill, profile);
+        placeholders.put("page", String.valueOf(page + 1));
+        placeholders.put("max_page", String.valueOf(maxPage + 1));
+        placeholders.put("source_title", uiConfig.text(locale, "source.title", Map.of(
+                "skill", skill.displayName(),
+                "page", String.valueOf(page + 1),
+                "max_page", String.valueOf(maxPage + 1)
+        )));
+        placeholders.put("source_summary", uiConfig.text(locale, "source.summary", Map.of()));
+        placeholders.put("no_sources", uiConfig.text(locale, "source.no_sources", Map.of()));
+        placeholders.put("previous_label", uiConfig.text(locale, "navigation.previous", Map.of()));
+        placeholders.put("back_label", uiConfig.text(locale, "navigation.back", Map.of()));
+        placeholders.put("next_label", uiConfig.text(locale, "navigation.next", Map.of()));
+        return placeholders;
+    }
+
+    private Map<String, String> sourceEntryPlaceholders(String locale, SourceInfoService.SourceEntry entry) {
+        return Map.of(
+                "category", sourceCategory(locale, entry.category()),
+                "key", SourceDisplay.key(uiConfig, locale, entry.category(), entry.key()),
+                "value", NUMBER_FORMAT.format(entry.amount()),
+                "behavior", uiConfig.text(locale, entry.behaviorKey(), Map.of()),
+                "formula", uiConfig.text(locale, entry.formulaKey(), Map.of())
+        );
+    }
+
+    private IconConfig sourceIcon(SourceInfoService.SourceEntry entry) {
+        Material material = switch (entry.category()) {
+            case BLOCK -> matchMaterial(entry.key(), Material.STONE);
+            case ENTITY -> matchMaterial(entry.key() + "_SPAWN_EGG", Material.EGG);
+            case DAMAGE -> Material.SHIELD;
+            case FISH -> fishingIcon(entry.key());
+            case ENCHANT -> Material.ENCHANTED_BOOK;
+            case BREW -> Material.POTION;
+            case MOVEMENT -> Material.FEATHER;
+        };
+        return IconConfig.of(material);
+    }
+
+    private Material matchMaterial(String key, Material fallback) {
+        if (key == null || key.isBlank() || key.equalsIgnoreCase("DEFAULT")) {
+            return fallback;
+        }
+        Material material = Material.matchMaterial(key);
+        return material == null ? fallback : material;
+    }
+
+    private Material fishingIcon(String key) {
+        if ("TREASURE".equalsIgnoreCase(key)) {
+            return Material.CHEST;
+        }
+        if ("JUNK".equalsIgnoreCase(key)) {
+            return Material.STRING;
+        }
+        return matchMaterial(key, Material.COD);
+    }
+
+    private String sourceCategory(String locale, SourceCategory category) {
+        return uiConfig.text(locale, "source.category." + category.name().toLowerCase(Locale.ROOT), Map.of());
+    }
+
+    private String sourceTarget(String skillId, int parentPage, int page) {
+        return skillId + ":" + parentPage + ":" + page;
     }
 
     private Map<String, String> sourcePlaceholders(Skill skill, Trait trait, UserProfile profile, int contribution) {

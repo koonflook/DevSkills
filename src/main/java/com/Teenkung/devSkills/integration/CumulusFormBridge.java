@@ -8,14 +8,17 @@ import com.Teenkung.devSkills.domain.trait.Trait;
 import com.Teenkung.devSkills.domain.user.UserProfile;
 import com.Teenkung.devSkills.gui.MenuManager;
 import com.Teenkung.devSkills.service.LevelerService;
+import com.Teenkung.devSkills.service.SourceInfoService;
 import com.Teenkung.devSkills.service.TraitService;
 import com.Teenkung.devSkills.util.MiniMessageUtil;
 import com.Teenkung.devSkills.util.RewardDisplay;
+import com.Teenkung.devSkills.util.SourceDisplay;
 import com.Teenkung.devSkills.util.TraitContributions;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -31,6 +34,7 @@ public final class CumulusFormBridge {
     private final FloodgateBridge floodgateBridge;
     private final ConfigManager configManager;
     private final LevelerService levelerService;
+    private final SourceInfoService sourceInfoService;
     private final TraitService traitService;
     private final UiConfig uiConfig;
     private final PlaceholderApiBridge placeholderApi;
@@ -44,6 +48,7 @@ public final class CumulusFormBridge {
         this.floodgateBridge = floodgateBridge;
         this.configManager = configManager;
         this.levelerService = levelerService;
+        this.sourceInfoService = new SourceInfoService(configManager.sources());
         this.traitService = traitService;
         this.uiConfig = uiConfig;
         this.placeholderApi = placeholderApi;
@@ -139,6 +144,12 @@ public final class CumulusFormBridge {
         ));
         UUID playerId = player.getUniqueId();
         SimpleForm.Builder builder = SimpleForm.builder().title(render(player, skill.displayName())).content(content);
+        addButton(
+                builder,
+                text(player, profile.settings().locale(), "source.button", Map.of()),
+                null,
+                () -> withProfile(playerId, (currentPlayer, currentProfile) -> currentMenus().openSourceInfo(currentPlayer, currentProfile, skillId, page))
+        );
         navigation(
                 builder,
                 playerId,
@@ -146,6 +157,51 @@ public final class CumulusFormBridge {
                 bounds,
                 next -> withProfile(playerId, (currentPlayer, currentProfile) -> currentMenus().openSkill(currentPlayer, currentProfile, skillId, next)),
                 () -> withProfile(playerId, (currentPlayer, currentProfile) -> currentMenus().openSkills(currentPlayer, currentProfile))
+        );
+        return floodgateBridge.sendForm(playerId, builder.build());
+    }
+
+    public boolean openSourceInfo(Player player, UserProfile profile, String skillId, int parentPage) {
+        return openSourceInfo(player, profile, skillId, parentPage, 0);
+    }
+
+    public boolean openSourceInfo(Player player, UserProfile profile, String skillId, int parentPage, int requestedPage) {
+        Skill skill = configManager.skills().get(skillId);
+        if (!uiConfig.bedrockForms() || skill == null) {
+            return false;
+        }
+        String locale = profile.settings().locale();
+        List<SourceInfoService.SourceEntry> entries = sourceInfoService.entries(skill.id());
+        Page bounds = Page.of(requestedPage, entries.size(), uiConfig.bedrockPageSize());
+        List<String> rows = new ArrayList<>();
+        for (SourceInfoService.SourceEntry entry : entries.subList(bounds.from(), bounds.to())) {
+            rows.add(text(player, locale, "source.entry", sourceEntryPlaceholders(player, locale, entry)));
+        }
+        if (rows.isEmpty()) {
+            rows.add(text(player, locale, "source.no_sources", Map.of()));
+        }
+        String content = text(player, locale, "source.content", Map.of(
+                "skill", skill.displayName(),
+                "page", String.valueOf(bounds.page() + 1),
+                "max_page", String.valueOf(bounds.maxPage() + 1),
+                "rows", String.join("\n", rows),
+                "multiplier", text(player, locale, "source.multiplier", Map.of())
+        ));
+        UUID playerId = player.getUniqueId();
+        SimpleForm.Builder builder = SimpleForm.builder()
+                .title(text(player, locale, "source.title", Map.of(
+                        "skill", skill.displayName(),
+                        "page", String.valueOf(bounds.page() + 1),
+                        "max_page", String.valueOf(bounds.maxPage() + 1)
+                )))
+                .content(content);
+        navigation(
+                builder,
+                playerId,
+                locale,
+                bounds,
+                next -> withProfile(playerId, (currentPlayer, currentProfile) -> currentMenus().openSourceInfo(currentPlayer, currentProfile, skillId, parentPage, next)),
+                () -> withProfile(playerId, (currentPlayer, currentProfile) -> currentMenus().openSkill(currentPlayer, currentProfile, skillId, parentPage))
         );
         return floodgateBridge.sendForm(playerId, builder.build());
     }
@@ -322,6 +378,16 @@ public final class CumulusFormBridge {
 
     private String text(Player player, String locale, String key, Map<String, String> placeholders) {
         return MiniMessageUtil.plain(placeholderApi.apply(player, uiConfig.text(locale, key, placeholders)), Map.of());
+    }
+
+    private Map<String, String> sourceEntryPlaceholders(Player player, String locale, SourceInfoService.SourceEntry entry) {
+        return Map.of(
+                "category", text(player, locale, "source.category." + entry.category().name().toLowerCase(Locale.ROOT), Map.of()),
+                "key", SourceDisplay.key(uiConfig, locale, entry.category(), entry.key()),
+                "value", String.valueOf(entry.amount()),
+                "behavior", text(player, locale, entry.behaviorKey(), Map.of()),
+                "formula", text(player, locale, entry.formulaKey(), Map.of())
+        );
     }
 
     private String render(Player player, String value) {

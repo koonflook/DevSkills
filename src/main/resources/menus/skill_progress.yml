@@ -15,6 +15,14 @@ items:
       - "<gray>XP: <white><xp>/<xp_required></white>"
       - "<gray><progress_bar> <xp_percent>%</gray>"
     action: none
+  sources:
+    slot: 8
+    icon:
+      material: BOOK
+    name: "<source_button>"
+    lore:
+      - "<source_button_lore>"
+    action: open-sources
   previous-page:
     slot: 45
     icon:

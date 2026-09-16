@@ -50,7 +50,8 @@ public final class ConfigManager {
             "menus/profile.yml",
             "menus/trait_info.yml",
             "menus/skills.yml",
-            "menus/skill_progress.yml"
+            "menus/skill_progress.yml",
+            "menus/source_info.yml"
     );
 
     private final JavaPlugin plugin;
@@ -414,6 +415,7 @@ public final class ConfigManager {
         loaded.put("trait_info", loadMenu("menus/trait_info.yml"));
         loaded.put("skills", loadMenu("menus/skills.yml"));
         loaded.put("skill_progress", loadMenu("menus/skill_progress.yml"));
+        loaded.put("source_info", loadMenu("menus/source_info.yml"));
         return immutableOrdered(loaded);
     }
 

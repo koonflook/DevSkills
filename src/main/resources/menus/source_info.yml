@@ -1,0 +1,56 @@
+title: "<source_title>"
+size: 54
+fill:
+  icon:
+    material: BLACK_STAINED_GLASS_PANE
+  name: " "
+items:
+  summary:
+    slot: 4
+    icon:
+      material: EXPERIENCE_BOTTLE
+    name: "<skill>"
+    lore:
+      - "<source_summary>"
+    action: none
+  previous-page:
+    slot: 45
+    icon:
+      material: ARROW
+    name: "<previous_label>"
+    lore:
+      - "<gray><page>/<max_page></gray>"
+    action: previous-page
+  empty:
+    slot: 22
+    icon:
+      material: BARRIER
+    name: "<no_sources>"
+    lore: []
+    action: none
+  back:
+    slot: 49
+    icon:
+      material: BARRIER
+    name: "<back_label>"
+    lore: []
+    action: open-skill-page
+  next-page:
+    slot: 53
+    icon:
+      material: ARROW
+    name: "<next_label>"
+    lore:
+      - "<gray><page>/<max_page></gray>"
+    action: next-page
+templates:
+  entry:
+    slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43]
+    icon:
+      material: PAPER
+    name: "<aqua><category></aqua> <dark_gray>/</dark_gray> <white><key></white>"
+    lore:
+      - "<gray>EXP พื้นฐาน: <white><value> EXP</white></gray>"
+      - "<gray><behavior></gray>"
+      - "<dark_gray><formula></dark_gray>"
+    action: none
