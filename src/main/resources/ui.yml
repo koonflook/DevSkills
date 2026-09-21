@@ -25,6 +25,14 @@ text:
     skill:
       content: "Level: <level>/<max_level>\nXP: <xp>/<xp_required>\n\n<rewards>"
       reward: "Level <level>: <rewards>"
+      ability: "Unlocked: <ability>"
+    ability:
+      button: "<aqua>Unlocked Abilities"
+      button_lore: "<gray>View unlocked mana and passive abilities.</gray>"
+      title: "<aqua>Unlocked Abilities <dark_gray>(<page>/<max_page>)"
+      content: "<entries>"
+      entry: "<ability> [<type>]\nSkill: <skill>\nRank: <level> (unlocked at <unlock_level>)\n<description>\n<detail>"
+      empty: "No abilities have been unlocked yet."
     source:
       button: "<aqua>EXP Sources"
       button_lore: "<gray>View how this skill gains EXP.</gray>"
@@ -188,6 +196,14 @@ text:
     skill:
       content: "เลเวล: <level>/<max_level>\nEXP: <xp>/<xp_required>\n\n<rewards>"
       reward: "เลเวล <level>: <rewards>"
+      ability: "ปลดล็อก: <ability>"
+    ability:
+      button: "<aqua>สกิลที่ปลดล็อกแล้ว"
+      button_lore: "<gray>ดูสกิลมานาและสกิลติดตัวที่ใช้งานได้</gray>"
+      title: "<aqua>สกิลที่ปลดล็อกแล้ว <dark_gray>(<page>/<max_page>)"
+      content: "<entries>"
+      entry: "<ability> [<type>]\nสายสกิล: <skill>\nระดับสกิล: <level> (ปลดล็อกที่เลเวล <unlock_level>)\n<description>\n<detail>"
+      empty: "ยังไม่มีสกิลที่ปลดล็อก"
     source:
       button: "<aqua>แหล่งที่มาของ EXP"
       button_lore: "<gray>ดูวิธีได้รับ EXP ของสกิลนี้</gray>"

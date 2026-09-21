@@ -10,6 +10,8 @@ import com.Teenkung.devSkills.config.MenuTemplateConfig;
 import com.Teenkung.devSkills.config.MessageManager;
 import com.Teenkung.devSkills.config.SoundManager;
 import com.Teenkung.devSkills.config.UiConfig;
+import com.Teenkung.devSkills.domain.ability.ManaAbilityConfig;
+import com.Teenkung.devSkills.domain.ability.PassiveAbilityConfig;
 import com.Teenkung.devSkills.domain.skill.Reward;
 import com.Teenkung.devSkills.domain.skill.Skill;
 import com.Teenkung.devSkills.domain.source.SourceCategory;
@@ -21,6 +23,7 @@ import com.Teenkung.devSkills.integration.FloodgateBridge;
 import com.Teenkung.devSkills.integration.PaperDialogBridge;
 import com.Teenkung.devSkills.integration.PlaceholderApiBridge;
 import com.Teenkung.devSkills.service.LevelerService;
+import com.Teenkung.devSkills.service.AbilityInfoService;
 import com.Teenkung.devSkills.service.SourceInfoService;
 import com.Teenkung.devSkills.service.TraitService;
 import com.Teenkung.devSkills.util.DisplayNames;
@@ -64,6 +67,7 @@ public final class MenuManager implements Listener {
     private final SoundManager soundManager;
     private final LevelerService levelerService;
     private final SourceInfoService sourceInfoService;
+    private final AbilityInfoService abilityInfoService;
     private final TraitService traitService;
     private final FloodgateBridge floodgateBridge;
     private final CumulusFormBridge cumulusFormBridge;
@@ -82,6 +86,7 @@ public final class MenuManager implements Listener {
         this.soundManager = soundManager;
         this.levelerService = levelerService;
         this.sourceInfoService = new SourceInfoService(configManager.sources());
+        this.abilityInfoService = new AbilityInfoService(configManager.manaAbilities(), configManager.passiveAbilities(), levelerService);
         this.traitService = traitService;
         this.floodgateBridge = floodgateBridge;
         this.cumulusFormBridge = cumulusFormBridge;
@@ -107,10 +112,11 @@ public final class MenuManager implements Listener {
         List<Skill> skills = new ArrayList<>(configManager.skills().values());
         int maxPage = MenuPages.maxPage(skills.size(), pageSize);
         int page = Math.max(0, Math.min(requestedPage, maxPage));
-        Map<String, String> pagePlaceholders = Map.of(
-                "page", String.valueOf(page + 1),
-                "max_page", String.valueOf(maxPage + 1)
-        );
+        Map<String, String> pagePlaceholders = new LinkedHashMap<>();
+        pagePlaceholders.put("page", String.valueOf(page + 1));
+        pagePlaceholders.put("max_page", String.valueOf(maxPage + 1));
+        pagePlaceholders.put("abilities_button", uiConfig.text("th", "ability.button", Map.of()));
+        pagePlaceholders.put("abilities_button_lore", uiConfig.text("th", "ability.button_lore", Map.of()));
         MenuHolder holder = new MenuHolder("skills:" + page);
         Inventory inventory = create(player, holder, config, pagePlaceholders);
         if (template != null) {
@@ -135,6 +141,10 @@ public final class MenuManager implements Listener {
             hidden.add("next-page");
         }
         applyStaticItems(player, inventory, holder, config, pagePlaceholders, Map.of(), overrides, hidden);
+        if (config.item("unlocked-abilities") == null) {
+            inventory.setItem(43, item(player, IconConfig.of(Material.ENCHANTED_BOOK), pagePlaceholders.get("abilities_button"), List.of(pagePlaceholders.get("abilities_button_lore")), Map.of(), Map.of()));
+            holder.actions().put(43, new MenuAction("open-abilities", ""));
+        }
         player.openInventory(inventory);
         soundManager.play(player, profile, "gui-open");
     }
@@ -234,7 +244,9 @@ public final class MenuManager implements Listener {
             nodePlaceholders.put("status", DisplayNames.humanize(state));
             nodePlaceholders.put("level_progress", NUMBER_FORMAT.format(levelProgressPercent(skill, xp, level, currentLevel)));
             List<Reward> rewards = skill.rewards().rewardsForLevel(level);
-            Map<String, List<String>> linePlaceholders = Map.of("reward_lines", RewardDisplay.lines(rewards, configManager.traits()));
+            Map<String, List<String>> linePlaceholders = new LinkedHashMap<>();
+            linePlaceholders.put("reward_lines", RewardDisplay.lines(rewards, configManager.traits()));
+            linePlaceholders.put("ability_lines", abilityLines(skill.id(), level, profile.settings().locale()));
             inventory.setItem(roadSlots.get(index), templateItem(player, nodeTemplate, null, nodePlaceholders, linePlaceholders));
         }
         Map<String, MenuAction> overrides = new HashMap<>();
@@ -260,6 +272,69 @@ public final class MenuManager implements Listener {
 
     public void openSourceInfo(Player player, UserProfile profile, String skillId, int parentPage) {
         openSourceInfo(player, profile, skillId, parentPage, 0);
+    }
+
+    public void openAbilities(Player player, UserProfile profile) {
+        openAbilities(player, profile, 0);
+    }
+
+    public void openAbilities(Player player, UserProfile profile, int requestedPage) {
+        if (tryOpenBedrockForm(player, () -> cumulusFormBridge.openAbilities(player, profile, requestedPage))) {
+            return;
+        }
+        if (tryOpenAbilitiesDialog(player, profile, requestedPage)) {
+            return;
+        }
+        MenuConfig config = configManager.menus().get("ability_info");
+        if (config == null) {
+            return;
+        }
+        MenuTemplateConfig entryTemplate = config.template("entry");
+        List<AbilityInfoService.AbilityInfo> entries = abilityInfoService.unlocked(profile, profile.settings().locale());
+        int pageSize = Math.max(1, entryTemplate == null ? 1 : entryTemplate.slots().size());
+        int maxPage = MenuPages.maxPage(entries.size(), pageSize);
+        int page = MenuPages.clampPage(requestedPage, entries.size(), pageSize);
+        Map<String, String> basePlaceholders = Map.of(
+                "page", String.valueOf(page + 1),
+                "max_page", String.valueOf(maxPage + 1)
+        );
+        MenuHolder holder = new MenuHolder("abilities:" + page);
+        Inventory inventory = create(player, holder, config, basePlaceholders);
+        if (entryTemplate != null) {
+            int from = Math.min(entries.size(), page * pageSize);
+            List<AbilityInfoService.AbilityInfo> visible = entries.subList(from, Math.min(entries.size(), from + pageSize));
+            for (int index = 0; index < visible.size(); index++) {
+                AbilityInfoService.AbilityInfo entry = visible.get(index);
+                Skill skill = configManager.skills().get(entry.skillId());
+                Map<String, String> placeholders = new LinkedHashMap<>(basePlaceholders);
+                placeholders.put("ability", entry.name());
+                placeholders.put("ability_type", entry.type());
+                placeholders.put("skill", skill == null ? entry.skillId() : skill.displayName());
+                placeholders.put("ability_level", String.valueOf(entry.abilityLevel()));
+                placeholders.put("unlock_level", String.valueOf(entry.unlockLevel()));
+                placeholders.put("ability_description", entry.description());
+                placeholders.put("ability_detail", entry.detail());
+                inventory.setItem(entryTemplate.slots().get(index), templateItem(player, entryTemplate, skill == null ? null : skill.icon(), placeholders, Map.of()));
+            }
+        }
+        Map<String, MenuAction> overrides = Map.of(
+                "previous-page", new MenuAction("open-abilities-page", String.valueOf(page - 1)),
+                "next-page", new MenuAction("open-abilities-page", String.valueOf(page + 1)),
+                "back", new MenuAction("open-skills", "")
+        );
+        Set<String> hidden = new HashSet<>();
+        if (page <= 0) {
+            hidden.add("previous-page");
+        }
+        if (page >= maxPage) {
+            hidden.add("next-page");
+        }
+        if (!entries.isEmpty()) {
+            hidden.add("empty");
+        }
+        applyStaticItems(player, inventory, holder, config, basePlaceholders, Map.of(), overrides, hidden);
+        player.openInventory(inventory);
+        soundManager.play(player, profile, "gui-open");
     }
 
     public void openSourceInfo(Player player, UserProfile profile, String skillId, int parentPage, int requestedPage) {
@@ -424,6 +499,8 @@ public final class MenuManager implements Listener {
             case "open-skill-page" -> openSkillPage(player, profile, action.target());
             case "open-sources" -> openSourceTarget(player, profile, action.target());
             case "open-sources-page" -> openSourcePageTarget(player, profile, action.target());
+            case "open-abilities" -> openAbilities(player, profile);
+            case "open-abilities-page" -> openAbilitiesPage(player, profile, action.target());
             case "open-trait" -> openTrait(player, profile, action.target());
             default -> {
             }
@@ -449,6 +526,13 @@ public final class MenuManager implements Listener {
         }
         try {
             openSkill(player, profile, parts[0], Integer.parseInt(parts[1]));
+        } catch (NumberFormatException ignored) {
+        }
+    }
+
+    private void openAbilitiesPage(Player player, UserProfile profile, String target) {
+        try {
+            openAbilities(player, profile, Integer.parseInt(target));
         } catch (NumberFormatException ignored) {
         }
     }
@@ -505,6 +589,7 @@ public final class MenuManager implements Listener {
         if (page < maxPage) {
             buttons.add(dialogButton(player, locale, "navigation.next", "open-skills-page", "", page + 1));
         }
+        buttons.add(dialogButton(player, locale, "ability.button", "open-abilities", "", 0));
         return paperDialogBridge.open(player, new PaperDialogBridge.DialogView(
                 ui(player, locale, "skills.title", Map.of()),
                 ui(player, locale, "skills.content", Map.of("page", String.valueOf(page + 1), "max_page", String.valueOf(maxPage + 1))),
@@ -564,7 +649,16 @@ public final class MenuManager implements Listener {
         int firstLevel = page * pageSize + 1;
         int lastLevel = Math.min(skill.maxLevel(), firstLevel + pageSize - 1);
         for (int level = firstLevel; level <= lastLevel; level++) {
-            List<String> rewardLines = RewardDisplay.lines(skill.rewards().rewardsForLevel(level), configManager.traits());
+            List<String> rewardLines = new ArrayList<>(RewardDisplay.lines(skill.rewards().rewardsForLevel(level), configManager.traits()));
+            if (rewardLines.size() == 1 && MiniMessageUtil.plain(rewardLines.getFirst(), Map.of()).contains("No rewards")) {
+                rewardLines.clear();
+            }
+            for (String ability : abilityInfoService.unlockNames(skill.id(), level, profile.settings().locale())) {
+                rewardLines.add(uiConfig.text(profile.settings().locale(), "skill.ability", Map.of("ability", ability)));
+            }
+            if (rewardLines.isEmpty()) {
+                continue;
+            }
             rewards.add(uiConfig.text(profile.settings().locale(), "skill.reward", Map.of(
                     "level", String.valueOf(level),
                     "rewards", String.join(", ", rewardLines.stream().map(line -> MiniMessageUtil.plain(line, Map.of())).toList())
@@ -591,6 +685,49 @@ public final class MenuManager implements Listener {
                 ui(player, profile.settings().locale(), "skill.content", contentPlaceholders),
                 buttons,
                 ui(player, profile.settings().locale(), "navigation.close", Map.of()),
+                3
+        ));
+    }
+
+    private boolean tryOpenAbilitiesDialog(Player player, UserProfile profile, int requestedPage) {
+        if (!dialogEnabled()) {
+            return false;
+        }
+        String locale = profile.settings().locale();
+        List<AbilityInfoService.AbilityInfo> entries = abilityInfoService.unlocked(profile, locale);
+        int pageSize = Math.max(1, uiConfig.bedrockPageSize());
+        int maxPage = MenuPages.maxPage(entries.size(), pageSize);
+        int page = MenuPages.clampPage(requestedPage, entries.size(), pageSize);
+        int from = Math.min(entries.size(), page * pageSize);
+        List<String> rows = new ArrayList<>();
+        for (AbilityInfoService.AbilityInfo entry : entries.subList(from, Math.min(entries.size(), from + pageSize))) {
+            Skill skill = configManager.skills().get(entry.skillId());
+            rows.add(uiConfig.text(locale, "ability.entry", Map.of(
+                    "ability", entry.name(),
+                    "type", entry.type(),
+                    "skill", skill == null ? entry.skillId() : skill.displayName(),
+                    "level", String.valueOf(entry.abilityLevel()),
+                    "unlock_level", String.valueOf(entry.unlockLevel()),
+                    "description", entry.description(),
+                    "detail", entry.detail()
+            )));
+        }
+        if (rows.isEmpty()) {
+            rows.add(uiConfig.text(locale, "ability.empty", Map.of()));
+        }
+        List<PaperDialogBridge.DialogButton> buttons = new ArrayList<>();
+        if (page > 0) {
+            buttons.add(dialogButton(player, locale, "navigation.previous", "open-abilities-page", "", page - 1));
+        }
+        if (page < maxPage) {
+            buttons.add(dialogButton(player, locale, "navigation.next", "open-abilities-page", "", page + 1));
+        }
+        buttons.add(dialogButton(player, locale, "navigation.back", "open-skills", "", 0));
+        return paperDialogBridge.open(player, new PaperDialogBridge.DialogView(
+                ui(player, locale, "ability.title", Map.of("page", String.valueOf(page + 1), "max_page", String.valueOf(maxPage + 1))),
+                ui(player, locale, "ability.content", Map.of("entries", String.join("\n\n", rows))),
+                buttons,
+                ui(player, locale, "navigation.close", Map.of()),
                 3
         ));
     }
@@ -708,6 +845,8 @@ public final class MenuManager implements Listener {
                 case "open-skill-page" -> currentMenus.openSkill(currentPlayer, currentProfile, target, page);
                 case "open-sources" -> currentMenus.openSourceInfo(currentPlayer, currentProfile, target, page);
                 case "open-sources-page" -> openSourceDialogTarget(currentMenus, currentPlayer, currentProfile, target, page);
+                case "open-abilities" -> currentMenus.openAbilities(currentPlayer, currentProfile);
+                case "open-abilities-page" -> currentMenus.openAbilities(currentPlayer, currentProfile, page);
                 case "open-trait" -> currentMenus.openTrait(currentPlayer, currentProfile, target);
                 default -> {
                 }
@@ -904,7 +1043,7 @@ public final class MenuManager implements Listener {
             return fallback;
         }
         Material material = Material.matchMaterial(key);
-        return material == null ? fallback : material;
+        return material == null || !material.isItem() ? fallback : material;
     }
 
     private Material fishingIcon(String key) {
@@ -941,6 +1080,26 @@ public final class MenuManager implements Listener {
         List<String> lines = new ArrayList<>();
         for (StatMapping mapping : trait.stats()) {
             lines.add("<gray>" + mapping.displayName() + ": <white>+" + NUMBER_FORMAT.format(mapping.perLevel()) + "</white>/level");
+        }
+        return lines;
+    }
+
+    private List<String> abilityLines(String skillId, int level, String locale) {
+        List<String> lines = new ArrayList<>();
+        for (ManaAbilityConfig ability : configManager.manaAbilities().values()) {
+            if (!ability.skillId().equals(skillId) || ability.unlockLevel() != level) {
+                continue;
+            }
+            String abilityName = messageManager.raw(locale, "mana-ability.names." + ability.id(), Map.of());
+            String template = messageManager.raw(locale, "mana-ability.unlocked", Map.of());
+            lines.add(template.replace("<ability>", abilityName));
+        }
+        for (PassiveAbilityConfig ability : configManager.passiveAbilities().values()) {
+            if (!ability.skillId().equals(skillId) || ability.unlockLevel() != level) {
+                continue;
+            }
+            String template = messageManager.raw(locale, "passive-ability.unlocked", Map.of());
+            lines.add(template.replace("<ability>", ability.displayName(locale)));
         }
         return lines;
     }

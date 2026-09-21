@@ -9,6 +9,10 @@ import com.Teenkung.devSkills.domain.skill.RewardPattern;
 import com.Teenkung.devSkills.domain.skill.RewardTable;
 import com.Teenkung.devSkills.domain.skill.Skill;
 import com.Teenkung.devSkills.domain.skill.TraitReward;
+import com.Teenkung.devSkills.domain.ability.ManaAbilityAction;
+import com.Teenkung.devSkills.domain.ability.ManaAbilityConfig;
+import com.Teenkung.devSkills.domain.ability.PassiveAbilityAction;
+import com.Teenkung.devSkills.domain.ability.PassiveAbilityConfig;
 import com.Teenkung.devSkills.domain.source.SourceCategory;
 import com.Teenkung.devSkills.domain.trait.ModifierKind;
 import com.Teenkung.devSkills.domain.trait.StatMapping;
@@ -40,6 +44,8 @@ public final class ConfigManager {
             "config.yml",
             "traits.yml",
             "skills.yml",
+            "mana_abilities.yml",
+            "passive_abilities.yml",
             "sources.yml",
             "boosters.yml",
             "hud.yml",
@@ -51,6 +57,7 @@ public final class ConfigManager {
             "menus/trait_info.yml",
             "menus/skills.yml",
             "menus/skill_progress.yml",
+            "menus/ability_info.yml",
             "menus/source_info.yml"
     );
 
@@ -60,6 +67,8 @@ public final class ConfigManager {
     private BoosterConfig boosterConfig;
     private Map<String, Trait> traits;
     private Map<String, Skill> skills;
+    private Map<String, ManaAbilityConfig> manaAbilities;
+    private Map<String, PassiveAbilityConfig> passiveAbilities;
     private Map<String, Map<SourceCategory, Map<String, Double>>> sources;
     private Map<String, SoundEntry> sounds;
     private Map<String, MenuConfig> menus;
@@ -81,6 +90,8 @@ public final class ConfigManager {
         boosterConfig = loadBoosterConfig(load("boosters.yml"));
         traits = loadTraits(load("traits.yml"));
         skills = loadSkills(load("skills.yml"));
+        manaAbilities = loadManaAbilities(load("mana_abilities.yml"));
+        passiveAbilities = loadPassiveAbilities(load("passive_abilities.yml"));
         sources = loadSources(load("sources.yml"));
         sounds = loadSounds(load("sounds.yml"));
         menus = loadMenus();
@@ -112,6 +123,14 @@ public final class ConfigManager {
 
     public Map<String, Skill> skills() {
         return skills;
+    }
+
+    public Map<String, ManaAbilityConfig> manaAbilities() {
+        return manaAbilities;
+    }
+
+    public Map<String, PassiveAbilityConfig> passiveAbilities() {
+        return passiveAbilities;
     }
 
     public Map<String, Map<SourceCategory, Map<String, Double>>> sources() {
@@ -284,6 +303,77 @@ public final class ConfigManager {
         return immutableOrdered(loaded);
     }
 
+    private Map<String, ManaAbilityConfig> loadManaAbilities(YamlConfiguration config) {
+        Map<String, ManaAbilityConfig> loaded = new LinkedHashMap<>();
+        ConfigurationSection root = config.getConfigurationSection("mana-abilities");
+        if (root == null) {
+            throw new IllegalStateException("mana_abilities.yml must contain mana-abilities");
+        }
+        for (String id : root.getKeys(false)) {
+            ConfigurationSection section = root.getConfigurationSection(id);
+            if (section == null) {
+                continue;
+            }
+            ManaAbilityAction action;
+            try {
+                action = ManaAbilityAction.valueOf(section.getString("action", id).toUpperCase(Locale.ROOT));
+            } catch (IllegalArgumentException exception) {
+                plugin.getLogger().warning("Ignoring unknown mana ability action for " + id + ".");
+                continue;
+            }
+            loaded.put(id, new ManaAbilityConfig(
+                    id,
+                    section.getString("skill", id),
+                    action,
+                    nonNegativeFinite(section.getDouble("base-value", 0.0D), 0.0D),
+                    nonNegativeFinite(section.getDouble("value-per-level", 0.0D), 0.0D),
+                    positiveFinite(section.getDouble("base-cost", 20.0D), 20.0D),
+                    nonNegativeFinite(section.getDouble("cost-per-level", 0.0D), 0.0D),
+                    Math.max(0, section.getInt("base-cooldown-ticks", 200)),
+                    section.getInt("cooldown-per-level", 0),
+                    Math.max(1, section.getInt("unlock-level", 1)),
+                    Math.max(1, section.getInt("level-up", 1)),
+                    Math.max(0, section.getInt("duration-ticks", 100)),
+                    Math.clamp(section.getInt("max-blocks", 1), 1, 256)
+            ));
+        }
+        return immutableOrdered(loaded);
+    }
+
+    private Map<String, PassiveAbilityConfig> loadPassiveAbilities(YamlConfiguration config) {
+        Map<String, PassiveAbilityConfig> loaded = new LinkedHashMap<>();
+        ConfigurationSection root = config.getConfigurationSection("passive-abilities");
+        if (root == null) {
+            throw new IllegalStateException("passive_abilities.yml must contain passive-abilities");
+        }
+        for (String id : root.getKeys(false)) {
+            ConfigurationSection section = root.getConfigurationSection(id);
+            if (section == null) {
+                continue;
+            }
+            PassiveAbilityAction action;
+            try {
+                action = PassiveAbilityAction.valueOf(section.getString("action", id).toUpperCase(Locale.ROOT));
+            } catch (IllegalArgumentException exception) {
+                plugin.getLogger().warning("Ignoring unknown passive ability action for " + id + ".");
+                continue;
+            }
+            loaded.put(id, new PassiveAbilityConfig(
+                    id,
+                    section.getString("skill", id),
+                    action,
+                    section.getString("display-name-th", id),
+                    section.getString("display-name-en", id),
+                    nonNegativeFinite(section.getDouble("base-value", 0.0D), 0.0D),
+                    nonNegativeFinite(section.getDouble("value-per-level", 0.0D), 0.0D),
+                    Math.max(1, section.getInt("unlock-level", 1)),
+                    Math.max(1, section.getInt("level-up", 1)),
+                    Math.max(0, section.getInt("max-ability-level", 0))
+            ));
+        }
+        return immutableOrdered(loaded);
+    }
+
     private LevelCurve buildCurve(String skillId, String expression, int maxLevel) {
         try {
             return new LevelCurve(expression, maxLevel);
@@ -415,6 +505,7 @@ public final class ConfigManager {
         loaded.put("trait_info", loadMenu("menus/trait_info.yml"));
         loaded.put("skills", loadMenu("menus/skills.yml"));
         loaded.put("skill_progress", loadMenu("menus/skill_progress.yml"));
+        loaded.put("ability_info", loadMenu("menus/ability_info.yml"));
         loaded.put("source_info", loadMenu("menus/source_info.yml"));
         return immutableOrdered(loaded);
     }
@@ -581,5 +672,9 @@ public final class ConfigManager {
 
     private static double positiveFinite(double value, double fallback) {
         return Double.isFinite(value) && value > 0.0D ? value : fallback;
+    }
+
+    private static double nonNegativeFinite(double value, double fallback) {
+        return Double.isFinite(value) && value >= 0.0D ? value : fallback;
     }
 }

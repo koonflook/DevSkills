@@ -8,9 +8,25 @@ plugin:
   unknown-skill: "<prefix><red>Unknown skill: <white><skill></white>."
   unknown-trait: "<prefix><red>Unknown trait: <white><trait></white>."
   invalid-number: "<prefix><red>Invalid number: <white><value></white>."
+  invalid-positive: "<prefix><red>Value must be greater than 0: <white><value></white>."
+  invalid-nonnegative: "<prefix><red>Value must be 0 or greater: <white><value></white>."
   admin-success: "<prefix><green>Updated <white><player></white>."
   admin-usage: "<prefix><yellow>Usage: <white><usage></white>"
   toggle: "<prefix><green><setting> is now <white><value></white>."
+mana-ability:
+  activated: "<prefix><aqua>Using skill <white><ability></white>"
+  unlocked: "<aqua>Mana Skill unlocked: <white><ability></white>"
+  names:
+    replenish: "Replenish"
+    treecapitator: "Treecapitator"
+    speed_mine: "Speed Mine"
+    sharp_hook: "Sharp Hook"
+    terraform: "Terraform"
+    charged_shot: "Charged Shot"
+    absorption: "Damage Guard"
+    lightning_blade: "Lightning Blade"
+passive-ability:
+  unlocked: "<aqua>Passive ability unlocked: <white><ability></white>"
 xp:
   actionbar: "<green>+<amount> <skill> XP</green> <gray>[<progress_bar>] <xp_percent>%</gray>"
   bossbar: "<skill>: <level>/<max_level> - <xp_percent>%"

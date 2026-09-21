@@ -54,6 +54,7 @@ templates:
     lore:
       - "<gray>Status: <white><status></white>"
       - "<reward_lines>"
+      - "<ability_lines>"
     action: none
   completed:
     icon:
@@ -63,6 +64,7 @@ templates:
       - "<gray>Status: <green><status></green>"
       - "<gray>Progress: <white><level_progress>%</white>"
       - "<reward_lines>"
+      - "<ability_lines>"
     action: none
   current:
     icon:
@@ -72,6 +74,7 @@ templates:
       - "<gray>Status: <yellow><status></yellow>"
       - "<gray>Progress: <white><level_progress>%</white>"
       - "<reward_lines>"
+      - "<ability_lines>"
     action: none
   locked:
     icon:
@@ -80,4 +83,5 @@ templates:
     lore:
       - "<gray>Status: <dark_gray><status></dark_gray>"
       - "<reward_lines>"
+      - "<ability_lines>"
     action: none

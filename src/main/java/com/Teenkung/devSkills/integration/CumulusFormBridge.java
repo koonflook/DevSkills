@@ -8,6 +8,7 @@ import com.Teenkung.devSkills.domain.trait.Trait;
 import com.Teenkung.devSkills.domain.user.UserProfile;
 import com.Teenkung.devSkills.gui.MenuManager;
 import com.Teenkung.devSkills.service.LevelerService;
+import com.Teenkung.devSkills.service.AbilityInfoService;
 import com.Teenkung.devSkills.service.SourceInfoService;
 import com.Teenkung.devSkills.service.TraitService;
 import com.Teenkung.devSkills.util.MiniMessageUtil;
@@ -35,6 +36,7 @@ public final class CumulusFormBridge {
     private final ConfigManager configManager;
     private final LevelerService levelerService;
     private final SourceInfoService sourceInfoService;
+    private final AbilityInfoService abilityInfoService;
     private final TraitService traitService;
     private final UiConfig uiConfig;
     private final PlaceholderApiBridge placeholderApi;
@@ -49,6 +51,7 @@ public final class CumulusFormBridge {
         this.configManager = configManager;
         this.levelerService = levelerService;
         this.sourceInfoService = new SourceInfoService(configManager.sources());
+        this.abilityInfoService = new AbilityInfoService(configManager.manaAbilities(), configManager.passiveAbilities(), levelerService);
         this.traitService = traitService;
         this.uiConfig = uiConfig;
         this.placeholderApi = placeholderApi;
@@ -78,7 +81,46 @@ public final class CumulusFormBridge {
             ));
             addButton(builder, label, uiConfig.bedrockImage("skills." + skill.id()), () -> withProfile(playerId, (currentPlayer, currentProfile) -> currentMenus().openSkill(currentPlayer, currentProfile, skill.id())));
         }
+        addButton(builder, text(player, locale, "ability.button", Map.of()), null, () -> withProfile(playerId, (currentPlayer, currentProfile) -> currentMenus().openAbilities(currentPlayer, currentProfile)));
         navigation(builder, playerId, locale, bounds, next -> withProfile(playerId, (currentPlayer, currentProfile) -> currentMenus().openSkillsPage(currentPlayer, currentProfile, next)), null);
+        return floodgateBridge.sendForm(playerId, builder.build());
+    }
+
+    public boolean openAbilities(Player player, UserProfile profile, int requestedPage) {
+        if (!uiConfig.bedrockForms()) {
+            return false;
+        }
+        String locale = profile.settings().locale();
+        List<AbilityInfoService.AbilityInfo> entries = abilityInfoService.unlocked(profile, locale);
+        Page bounds = Page.of(requestedPage, entries.size(), uiConfig.bedrockPageSize());
+        List<String> rows = new ArrayList<>();
+        for (AbilityInfoService.AbilityInfo entry : entries.subList(bounds.from(), bounds.to())) {
+            Skill skill = configManager.skills().get(entry.skillId());
+            rows.add(text(player, locale, "ability.entry", Map.of(
+                    "ability", entry.name(),
+                    "type", entry.type(),
+                    "skill", skill == null ? entry.skillId() : skill.displayName(),
+                    "level", String.valueOf(entry.abilityLevel()),
+                    "unlock_level", String.valueOf(entry.unlockLevel()),
+                    "description", entry.description(),
+                    "detail", entry.detail()
+            )));
+        }
+        if (rows.isEmpty()) {
+            rows.add(text(player, locale, "ability.empty", Map.of()));
+        }
+        UUID playerId = player.getUniqueId();
+        SimpleForm.Builder builder = SimpleForm.builder()
+                .title(text(player, locale, "ability.title", Map.of("page", String.valueOf(bounds.page() + 1), "max_page", String.valueOf(bounds.maxPage() + 1))))
+                .content(text(player, locale, "ability.content", Map.of("entries", String.join("\n\n", rows))));
+        navigation(
+                builder,
+                playerId,
+                locale,
+                bounds,
+                next -> withProfile(playerId, (currentPlayer, currentProfile) -> currentMenus().openAbilities(currentPlayer, currentProfile, next)),
+                () -> withProfile(playerId, (currentPlayer, currentProfile) -> currentMenus().openSkills(currentPlayer, currentProfile))
+        );
         return floodgateBridge.sendForm(playerId, builder.build());
     }
 
@@ -121,8 +163,14 @@ public final class CumulusFormBridge {
         int level = levelerService.level(skillId, xp);
         List<String> rewardLines = new ArrayList<>();
         for (int rewardLevel = Math.max(1, level); rewardLevel <= skill.maxLevel(); rewardLevel++) {
-            List<String> rewards = RewardDisplay.lines(skill.rewards().rewardsForLevel(rewardLevel), configManager.traits());
+            List<String> rewards = new ArrayList<>(RewardDisplay.lines(skill.rewards().rewardsForLevel(rewardLevel), configManager.traits()));
             if (rewards.size() == 1 && MiniMessageUtil.plain(rewards.getFirst(), Map.of()).contains("No rewards")) {
+                rewards.clear();
+            }
+            for (String ability : abilityInfoService.unlockNames(skillId, rewardLevel, profile.settings().locale())) {
+                rewards.add(text(player, profile.settings().locale(), "skill.ability", Map.of("ability", ability)));
+            }
+            if (rewards.isEmpty()) {
                 continue;
             }
             rewardLines.add(text(player, profile.settings().locale(), "skill.reward", Map.of(

@@ -1,0 +1,60 @@
+title: "<aqua>สกิลที่ปลดล็อกแล้ว <dark_gray>(<page>/<max_page>)"
+size: 54
+fill:
+  icon:
+    material: BLACK_STAINED_GLASS_PANE
+  name: " "
+items:
+  summary:
+    slot: 4
+    icon:
+      material: ENCHANTED_BOOK
+    name: "<aqua>สกิลที่ปลดล็อกแล้ว"
+    lore:
+      - "<gray>แสดงเฉพาะสกิลที่เลเวลถึงเงื่อนไขแล้ว"
+      - "<gray>รวมสกิลมานาและสกิลติดตัว"
+    action: none
+  previous-page:
+    slot: 45
+    icon:
+      material: ARROW
+    name: "<yellow>ก่อนหน้า"
+    lore:
+      - "<gray><page>/<max_page></gray>"
+    action: previous-page
+  empty:
+    slot: 22
+    icon:
+      material: BARRIER
+    name: "<yellow>ยังไม่มีสกิลที่ปลดล็อก"
+    lore:
+      - "<gray>เพิ่มเลเวลสกิลให้ถึงเงื่อนไขก่อน"
+    action: none
+  back:
+    slot: 49
+    icon:
+      material: BARRIER
+    name: "<yellow>กลับ"
+    lore: []
+    action: open-skills
+  next-page:
+    slot: 53
+    icon:
+      material: ARROW
+    name: "<yellow>ถัดไป"
+    lore:
+      - "<gray><page>/<max_page></gray>"
+    action: next-page
+templates:
+  entry:
+    slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43]
+    icon:
+      material: ENCHANTED_BOOK
+    name: "<aqua><ability></aqua> <dark_gray>[<ability_type>]</dark_gray>"
+    lore:
+      - "<gray>สายสกิล: <white><skill></white>"
+      - "<gray>ระดับสกิล: <white><ability_level></white> <dark_gray>(ปลดล็อกที่เลเวล <unlock_level>)</dark_gray>"
+      - ""
+      - "<white><ability_description></white>"
+      - "<yellow><ability_detail></yellow>"
+    action: none
