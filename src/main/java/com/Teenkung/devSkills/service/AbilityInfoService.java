@@ -27,40 +27,50 @@ public final class AbilityInfoService {
 
     public List<AbilityInfo> unlocked(UserProfile profile, String locale) {
         List<AbilityInfo> entries = new ArrayList<>();
-        boolean thai = true;
-        for (ManaAbilityConfig ability : manaAbilities.values()) {
-            int skillLevel = skillLevel(profile, ability.skillId());
-            int abilityLevel = ability.abilityLevel(skillLevel);
-            if (abilityLevel <= 0) {
+        for (AbilityDisplayEntry entry : allAbilities(profile, "th")) {
+            if (!entry.unlocked()) {
                 continue;
             }
             entries.add(new AbilityInfo(
-                    ability.skillId(),
-                    manaName(ability.action(), thai),
-                    thai ? "สกิลมานา" : "Mana Ability",
-                    manaDescription(ability.action(), thai),
-                    manaDetail(ability, skillLevel, thai),
-                    abilityLevel,
-                    ability.unlockLevel()
+                    entry.skillId(),
+                    entry.name(),
+                    entry.type().displayName(true),
+                    entry.description(),
+                    entry.detail(),
+                    entry.abilityLevel(),
+                    entry.unlockLevel()
             ));
         }
+        return List.copyOf(entries);
+    }
+
+    public List<AbilityDisplayEntry> abilitiesForSkill(String skillId, int skillLevel, String locale) {
+        boolean thai = "th".equalsIgnoreCase(locale);
+        List<AbilityDisplayEntry> entries = new ArrayList<>();
         for (PassiveAbilityConfig ability : passiveAbilities.values()) {
-            int skillLevel = skillLevel(profile, ability.skillId());
-            int abilityLevel = ability.abilityLevel(skillLevel);
-            if (abilityLevel <= 0) {
-                continue;
+            if (ability.skillId().equals(skillId)) {
+                entries.add(passiveEntry(ability, skillLevel, thai));
             }
-            entries.add(new AbilityInfo(
-                    ability.skillId(),
-                    ability.displayName("th"),
-                    thai ? "สกิลติดตัว" : "Passive Ability",
-                    passiveDescription(ability.action(), thai),
-                    passiveDetail(ability.action(), ability.value(skillLevel), thai),
-                    abilityLevel,
-                    ability.unlockLevel()
-            ));
         }
-        entries.sort(Comparator.comparing(AbilityInfo::skillId).thenComparingInt(AbilityInfo::unlockLevel).thenComparing(AbilityInfo::name));
+        for (ManaAbilityConfig ability : manaAbilities.values()) {
+            if (ability.skillId().equals(skillId)) {
+                entries.add(manaEntry(ability, skillLevel, thai));
+            }
+        }
+        entries.sort(displayOrder());
+        return List.copyOf(entries);
+    }
+
+    public List<AbilityDisplayEntry> allAbilities(UserProfile profile, String locale) {
+        boolean thai = "th".equalsIgnoreCase(locale);
+        List<AbilityDisplayEntry> entries = new ArrayList<>();
+        for (PassiveAbilityConfig ability : passiveAbilities.values()) {
+            entries.add(passiveEntry(ability, skillLevel(profile, ability.skillId()), thai));
+        }
+        for (ManaAbilityConfig ability : manaAbilities.values()) {
+            entries.add(manaEntry(ability, skillLevel(profile, ability.skillId()), thai));
+        }
+        entries.sort(displayOrder());
         return List.copyOf(entries);
     }
 
@@ -78,6 +88,45 @@ public final class AbilityInfoService {
             }
         }
         return List.copyOf(names);
+    }
+
+    private Comparator<AbilityDisplayEntry> displayOrder() {
+        return Comparator.comparing(AbilityDisplayEntry::skillId)
+                .thenComparing(AbilityDisplayEntry::type)
+                .thenComparingInt(AbilityDisplayEntry::unlockLevel)
+                .thenComparing(AbilityDisplayEntry::name);
+    }
+
+    private AbilityDisplayEntry manaEntry(ManaAbilityConfig ability, int skillLevel, boolean thai) {
+        int abilityLevel = ability.abilityLevel(skillLevel);
+        return new AbilityDisplayEntry(
+                ability.skillId(),
+                ability.id(),
+                AbilityType.MANA,
+                manaName(ability.action(), thai),
+                manaDescription(ability.action(), thai),
+                manaDetail(ability, skillLevel, thai),
+                ability.unlockLevel(),
+                abilityLevel,
+                abilityLevel > 0,
+                false
+        );
+    }
+
+    private AbilityDisplayEntry passiveEntry(PassiveAbilityConfig ability, int skillLevel, boolean thai) {
+        int abilityLevel = ability.abilityLevel(skillLevel);
+        return new AbilityDisplayEntry(
+                ability.skillId(),
+                ability.id(),
+                AbilityType.PASSIVE,
+                ability.displayName(thai ? "th" : "en"),
+                passiveDescription(ability.action(), thai),
+                passiveDetail(ability.action(), ability.value(skillLevel), thai),
+                ability.unlockLevel(),
+                abilityLevel,
+                abilityLevel > 0,
+                abilityLevel > 0 && ability.maxAbilityLevel() > 0 && abilityLevel >= ability.maxAbilityLevel()
+        );
     }
 
     private int skillLevel(UserProfile profile, String skillId) {
@@ -114,9 +163,10 @@ public final class AbilityInfoService {
         String value = NUMBER_FORMAT.format(ability.value(skillLevel));
         String mana = NUMBER_FORMAT.format(ability.cost(skillLevel));
         String cooldown = NUMBER_FORMAT.format(ability.cooldownTicks(skillLevel) / 20.0D);
+        String duration = NUMBER_FORMAT.format(ability.durationTicks() / 20.0D);
         return thai
-                ? "พลัง " + value + " | มานา " + mana + " | คูลดาวน์ " + cooldown + " วินาที"
-                : "Power " + value + " | Mana " + mana + " | Cooldown " + cooldown + "s";
+                ? "พลัง " + value + " | มานา " + mana + " | คูลดาวน์ " + cooldown + " วินาที | ระยะเวลา " + duration + " วินาที"
+                : "Power " + value + " | Mana " + mana + " | Cooldown " + cooldown + "s | Duration " + duration + "s";
     }
 
     private String passiveDescription(PassiveAbilityAction action, boolean thai) {
@@ -166,18 +216,76 @@ public final class AbilityInfoService {
     }
 
     private String passiveDetail(PassiveAbilityAction action, double value, boolean thai) {
+        double chance = Math.min(20.0D, value);
         double percent = value / 10.0D;
+        if (!thai) {
+            return "Activation chance " + NUMBER_FORMAT.format(chance) + "%";
+        }
         return switch (action) {
-            case AXE_DAMAGE, BOW_DAMAGE, MELEE_DAMAGE, FIRST_HIT, ENCHANT_DAMAGE -> thai
-                    ? "โบนัสความเสียหาย " + NUMBER_FORMAT.format(percent) + "%"
-                    : "Damage bonus " + NUMBER_FORMAT.format(percent) + "%";
-            case LOW_HEALTH_GUARD, MINING_GUARD, DEFENSE_GUARD, MOB_GUARD, PARRY, HEAL_BONUS -> thai
-                    ? "เมื่อทำงาน มีผล " + NUMBER_FORMAT.format(percent) + "%"
-                    : "Effect strength " + NUMBER_FORMAT.format(percent) + "%";
-            default -> thai
-                    ? "โอกาสทำงาน " + NUMBER_FORMAT.format(value) + "%"
-                    : "Activation chance " + NUMBER_FORMAT.format(value) + "%";
+            case CROP_BONUS_DROP, WOOD_BONUS_DROP, FORAGING_BONUS_DROP, LEAF_BONUS_DROP, MINING_BONUS_DROP,
+                    FISH_BONUS_DROP, FISH_TREASURE, EXCAVATION_BONUS_DROP, BREW_BONUS -> chanceDetail(chance, "ได้รับของเพิ่ม 1 ชิ้น");
+            case CROP_XP, MINING_XP, FISH_XP, EXCAVATION_XP, ENCHANT_XP -> chanceDetail(chance, "ได้รับ EXP วานิลลา +1");
+            case CROP_GROWTH -> chanceDetail(chance, "เร่งพืชใกล้ตัว 1 ระยะการเติบโต");
+            case AXE_DAMAGE, BOW_DAMAGE, MELEE_DAMAGE, FIRST_HIT, ENCHANT_DAMAGE -> "โบนัสความเสียหาย " + NUMBER_FORMAT.format(percent) + "%";
+            case LOW_HEALTH_GUARD, MINING_GUARD, DEFENSE_GUARD, MOB_GUARD, PARRY -> chanceDetail(chance,
+                    "ลดความเสียหาย " + NUMBER_FORMAT.format(Math.min(2.0D, percent)) + "%");
+            case PICKAXE_HASTE, SHOVEL_HASTE -> chanceDetail(chance, "ได้รับ Haste " + hasteLevel(value) + " เป็นเวลา 2 วินาที");
+            case MINING_HUNGER -> chanceDetail(chance, "ฟื้นค่าความหิว +1");
+            case FISH_PULL -> chanceDetail(chance, "ดึงเป้าหมายเข้าหาตัว");
+            case BOW_RETURN -> chanceDetail(chance, "เก็บลูกศรกลับ +1");
+            case BOW_STUN -> chanceDetail(chance, "ทำให้เป้าหมายติด Slowness I 1 วินาที");
+            case DEBUFF_RESIST -> chanceDetail(chance, "ป้องกันสถานะผิดปกติ");
+            case BLEED -> chanceDetail(chance, "ทำให้เป้าหมายติด Wither I 2 วินาที");
+            case HUNGER_SAVE -> chanceDetail(chance, "ไม่เสียค่าความหิว");
+            case SPRINT_SPEED -> chanceDetail(chance, "ได้รับ Speed I เป็นเวลา 2 วินาที");
+            case GOLDEN_HEAL -> chanceDetail(chance, "ได้รับ Regeneration I เป็นเวลา 3 วินาที");
+            case HEAL_BONUS -> chanceDetail(chance, "เพิ่มการฟื้นเลือด " + NUMBER_FORMAT.format(percent) + "%");
+            case CONSUME_HEAL, POTION_DRINK -> chanceDetail(chance, "ฟื้นพลังชีวิต +0.5");
+            case SPLASH_POWER -> chanceDetail(chance, "เพิ่มความแรงยาปา +0.05");
+            case LINGERING_POWER -> chanceDetail(chance, "เพิ่มรัศมียาพื้นที่ +0.25");
+            case POTION_DURATION -> chanceDetail(chance, "ได้รับ Regeneration I เป็นเวลา 2 วินาที");
+            case ENCHANT_DISCOUNT -> chanceDetail(chance, "ลดค่าเลเวลร่ายมนตร์ " + enchantDiscount(value));
+            case ENCHANT_REFUND -> chanceDetail(chance, "คืนเลเวลร่ายมนตร์ +1");
         };
+    }
+
+    private String chanceDetail(double chance, String effect) {
+        return "โอกาสทำงาน " + NUMBER_FORMAT.format(chance) + "% | " + effect;
+    }
+
+    private String hasteLevel(double value) {
+        int level = Math.clamp((int) Math.floor(value / 10.0D), 1, 2);
+        return level == 1 ? "I" : "II";
+    }
+
+    private String enchantDiscount(double value) {
+        return NUMBER_FORMAT.format(Math.max(1, (int) Math.floor(value / 10.0D)));
+    }
+
+    public enum AbilityType {
+        PASSIVE,
+        MANA;
+
+        public String displayName(boolean thai) {
+            if (thai) {
+                return this == PASSIVE ? "สกิลติดตัว" : "สกิลมานา";
+            }
+            return this == PASSIVE ? "Passive Ability" : "Mana Ability";
+        }
+    }
+
+    public record AbilityDisplayEntry(
+            String skillId,
+            String abilityId,
+            AbilityType type,
+            String name,
+            String description,
+            String detail,
+            int unlockLevel,
+            int abilityLevel,
+            boolean unlocked,
+            boolean maxed
+    ) {
     }
 
     public record AbilityInfo(

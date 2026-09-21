@@ -14,6 +14,8 @@ items:
       - "<gray>Level: <white><level>/<max_level></white>"
       - "<gray>XP: <white><xp>/<xp_required></white>"
       - "<gray><progress_bar> <xp_percent>%</gray>"
+      - ""
+      - "<ability_summary_lines>"
     action: none
   sources:
     slot: 8
@@ -23,6 +25,15 @@ items:
     lore:
       - "<source_button_lore>"
     action: open-sources
+  abilities:
+    slot: 0
+    icon:
+      material: ENCHANTED_BOOK
+    name: "<aqua>ความสามารถของสายนี้"
+    lore:
+      - "<gray>ดูสกิลติดตัวและสกิลมานา"
+      - "<gray>ของสาย <white><skill></white>"
+    action: open-ability-categories
   previous-page:
     slot: 45
     icon:

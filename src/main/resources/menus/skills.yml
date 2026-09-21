@@ -45,4 +45,6 @@ templates:
       - "<gray>Level: <white><level>/<max_level></white>"
       - "<gray>XP: <white><xp>/<xp_required></white>"
       - "<gray><progress_bar> <xp_percent>%</gray>"
+      - ""
+      - "<ability_summary_lines>"
     action: open-skill

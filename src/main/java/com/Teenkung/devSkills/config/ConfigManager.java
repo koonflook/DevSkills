@@ -23,6 +23,8 @@ import com.Teenkung.devSkills.storage.StorageProvider;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,6 +59,7 @@ public final class ConfigManager {
             "menus/trait_info.yml",
             "menus/skills.yml",
             "menus/skill_progress.yml",
+            "menus/ability_categories.yml",
             "menus/ability_info.yml",
             "menus/source_info.yml"
     );
@@ -505,13 +508,14 @@ public final class ConfigManager {
         loaded.put("trait_info", loadMenu("menus/trait_info.yml"));
         loaded.put("skills", loadMenu("menus/skills.yml"));
         loaded.put("skill_progress", loadMenu("menus/skill_progress.yml"));
+        loaded.put("ability_categories", loadMenu("menus/ability_categories.yml"));
         loaded.put("ability_info", loadMenu("menus/ability_info.yml"));
         loaded.put("source_info", loadMenu("menus/source_info.yml"));
         return immutableOrdered(loaded);
     }
 
     private MenuConfig loadMenu(String path) {
-        YamlConfiguration config = load(path);
+        YamlConfiguration config = loadMenuConfiguration(path);
         ConfigurationSection fillSection = config.getConfigurationSection("fill");
         return new MenuConfig(
                 config.getString("title", "DevSkills"),
@@ -520,6 +524,40 @@ public final class ConfigManager {
                 loadMenuItems(config.getConfigurationSection("items")),
                 loadMenuTemplates(config.getConfigurationSection("templates"))
         );
+    }
+
+    private YamlConfiguration loadMenuConfiguration(String path) {
+        YamlConfiguration config = load(path);
+        try (InputStream input = plugin.getResource(path)) {
+            if (input == null) {
+                return config;
+            }
+            YamlConfiguration defaults = YamlConfiguration.loadConfiguration(new InputStreamReader(input, StandardCharsets.UTF_8));
+            mergeMenuDefaults(config, defaults);
+        } catch (IOException exception) {
+            plugin.getLogger().warning("Unable to layer bundled menu defaults for " + path + ": " + exception.getMessage());
+        }
+        return config;
+    }
+
+    static void mergeMenuDefaults(ConfigurationSection target, ConfigurationSection defaults) {
+        for (String key : defaults.getKeys(false)) {
+            ConfigurationSection defaultChild = defaults.getConfigurationSection(key);
+            if (defaultChild == null) {
+                if (!target.isSet(key)) {
+                    target.set(key, defaults.get(key));
+                }
+                continue;
+            }
+            ConfigurationSection targetChild = target.getConfigurationSection(key);
+            if (targetChild == null) {
+                if (target.isSet(key)) {
+                    continue;
+                }
+                targetChild = target.createSection(key);
+            }
+            mergeMenuDefaults(targetChild, defaultChild);
+        }
     }
 
     private Map<String, MenuItemConfig> loadMenuItems(ConfigurationSection root) {
