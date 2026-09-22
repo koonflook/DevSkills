@@ -98,6 +98,23 @@ public final class DevSkillCommand implements CommandExecutor, TabCompleter {
             if (canManageBoosters(sender)) {
                 suggestions.add("booster");
             }
+        } else if (args.length == 3 && "admin".equalsIgnoreCase(args[0])
+                && (sender.hasPermission("devskill.admin") || canManageBoosters(sender))) {
+            if (sender.hasPermission("devskill.admin") && adminActionNeedsPlayer(args[1])) {
+                onlinePlayerNames().forEach(suggestions::add);
+            } else if ("booster".equalsIgnoreCase(args[1]) && canManageBoosters(sender)) {
+                suggestions.addAll(List.of("add", "list", "remove"));
+            }
+        } else if (args.length == 4 && "admin".equalsIgnoreCase(args[0])
+                && sender.hasPermission("devskill.admin") && adminActionNeedsPlayer(args[1])) {
+            if ("setlevel".equalsIgnoreCase(args[1]) || "addxp".equalsIgnoreCase(args[1])) {
+                suggestions.addAll(plugin.configManager().skills().keySet());
+            } else if ("settrait".equalsIgnoreCase(args[1])) {
+                suggestions.addAll(plugin.configManager().traits().keySet());
+            } else if ("reset".equalsIgnoreCase(args[1])) {
+                suggestions.add("all");
+                suggestions.addAll(plugin.configManager().skills().keySet());
+            }
         } else if (args.length == 3 && boosterCommand(args) && canManageBoosters(sender)) {
             suggestions.addAll(List.of("add", "list", "remove"));
         } else if (args.length == 4 && boosterCommand(args) && canManageBoosters(sender)) {
@@ -112,7 +129,10 @@ public final class DevSkillCommand implements CommandExecutor, TabCompleter {
             }
         } else if (args.length == 5 && boosterCommand(args) && "add".equalsIgnoreCase(args[2])
                 && "player".equalsIgnoreCase(args[3]) && canManageBoosters(sender)) {
-            Bukkit.getOnlinePlayers().stream().map(Player::getName).forEach(suggestions::add);
+            onlinePlayerNames().forEach(suggestions::add);
+        } else if (args.length == 5 && boosterCommand(args) && "list".equalsIgnoreCase(args[2])
+                && "player".equalsIgnoreCase(args[3]) && canManageBoosters(sender)) {
+            onlinePlayerNames().forEach(suggestions::add);
         } else if (args.length >= 4 && boosterCommand(args) && "add".equalsIgnoreCase(args[2]) && canManageBoosters(sender)) {
             int durationIndex = "player".equalsIgnoreCase(args[3]) ? 6 : 5;
             if (args.length == durationIndex + 1) {
@@ -235,8 +255,12 @@ public final class DevSkillCommand implements CommandExecutor, TabCompleter {
             send(sender, "plugin.no-permission");
             return;
         }
-        if (args.length < 3) {
+        if (args.length < 2 || !adminAction(args[1])) {
             usage(sender, "/devskill admin <setlevel|addxp|settrait|reset|booster>");
+            return;
+        }
+        if (args.length < 3) {
+            usage(sender, adminUsage(args[1]));
             return;
         }
         Player target = Bukkit.getPlayerExact(args[2]);
@@ -249,17 +273,25 @@ public final class DevSkillCommand implements CommandExecutor, TabCompleter {
             case "addxp" -> addXp(sender, target, args);
             case "settrait" -> setTrait(sender, target, args);
             case "reset" -> reset(sender, target, args);
-            default -> {
-            }
+            default -> usage(sender, "/devskill admin <setlevel|addxp|settrait|reset|booster>");
         }
     }
 
     private void setLevel(CommandSender sender, Player target, String[] args) {
-        if (args.length < 5 || !plugin.configManager().skills().containsKey(args[3])) {
+        if (args.length < 5) {
+            usage(sender, "/devskill admin setlevel <player> <skill> <level>");
+            return;
+        }
+        if (!plugin.configManager().skills().containsKey(args[3])) {
+            send(sender, "plugin.unknown-skill", Map.of("skill", args[3]));
             return;
         }
         Integer level = integer(sender, args[4]);
         if (level == null) {
+            return;
+        }
+        if (level < 1) {
+            send(sender, "plugin.invalid-positive", Map.of("value", args[4]));
             return;
         }
         plugin.xpService().setSkillLevel(target, args[3], level);
@@ -267,11 +299,19 @@ public final class DevSkillCommand implements CommandExecutor, TabCompleter {
     }
 
     private void addXp(CommandSender sender, Player target, String[] args) {
-        if (args.length < 5 || !plugin.configManager().skills().containsKey(args[3])) {
+        if (args.length < 5) {
+            usage(sender, "/devskill admin addxp <player> <skill> <amount>");
+            return;
+        }
+        if (!plugin.configManager().skills().containsKey(args[3])) {
+            send(sender, "plugin.unknown-skill", Map.of("skill", args[3]));
             return;
         }
         Double amount = decimal(sender, args[4]);
-        if (amount == null) {
+        if (amount == null || amount <= 0.0D) {
+            if (amount != null) {
+                send(sender, "plugin.invalid-positive", Map.of("value", args[4]));
+            }
             return;
         }
         plugin.xpService().grantXp(target, args[3], amount, XpGainCause.COMMAND);
@@ -279,11 +319,20 @@ public final class DevSkillCommand implements CommandExecutor, TabCompleter {
     }
 
     private void setTrait(CommandSender sender, Player target, String[] args) {
-        if (args.length < 5 || !plugin.configManager().traits().containsKey(args[3])) {
+        if (args.length < 5) {
+            usage(sender, "/devskill admin settrait <player> <trait> <amount>");
+            return;
+        }
+        if (!plugin.configManager().traits().containsKey(args[3])) {
+            send(sender, "plugin.unknown-trait", Map.of("trait", args[3]));
             return;
         }
         Integer amount = integer(sender, args[4]);
         if (amount == null) {
+            return;
+        }
+        if (amount < 0) {
+            send(sender, "plugin.invalid-nonnegative", Map.of("value", args[4]));
             return;
         }
         plugin.xpService().setManualTraitLevels(target, args[3], amount);
@@ -292,6 +341,10 @@ public final class DevSkillCommand implements CommandExecutor, TabCompleter {
 
     private void reset(CommandSender sender, Player target, String[] args) {
         String targetName = args.length >= 4 ? args[3] : "all";
+        if (!"all".equalsIgnoreCase(targetName) && !plugin.configManager().skills().containsKey(targetName)) {
+            send(sender, "plugin.unknown-skill", Map.of("skill", targetName));
+            return;
+        }
         plugin.xpService().reset(target, targetName);
         success(sender, target);
     }
@@ -532,6 +585,39 @@ public final class DevSkillCommand implements CommandExecutor, TabCompleter {
 
     private boolean boosterCommand(String[] args) {
         return args.length >= 2 && "admin".equalsIgnoreCase(args[0]) && "booster".equalsIgnoreCase(args[1]);
+    }
+
+    private boolean adminAction(String action) {
+        return "setlevel".equalsIgnoreCase(action)
+                || "addxp".equalsIgnoreCase(action)
+                || "settrait".equalsIgnoreCase(action)
+                || "reset".equalsIgnoreCase(action)
+                || "booster".equalsIgnoreCase(action);
+    }
+
+    private boolean adminActionNeedsPlayer(String action) {
+        return "setlevel".equalsIgnoreCase(action)
+                || "addxp".equalsIgnoreCase(action)
+                || "settrait".equalsIgnoreCase(action)
+                || "reset".equalsIgnoreCase(action);
+    }
+
+    private String adminUsage(String action) {
+        return switch (action.toLowerCase()) {
+            case "setlevel" -> "/devskill admin setlevel <player> <skill> <level>";
+            case "addxp" -> "/devskill admin addxp <player> <skill> <amount>";
+            case "settrait" -> "/devskill admin settrait <player> <trait> <amount>";
+            case "reset" -> "/devskill admin reset <player> [skill|all]";
+            case "booster" -> "/devskill admin booster <add|list|remove>";
+            default -> "/devskill admin <setlevel|addxp|settrait|reset|booster>";
+        };
+    }
+
+    private List<String> onlinePlayerNames() {
+        return Bukkit.getOnlinePlayers().stream()
+                .map(Player::getName)
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .toList();
     }
 
     private boolean canManageBoosters(CommandSender sender) {

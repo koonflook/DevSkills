@@ -27,6 +27,14 @@ items:
     lore:
       - "<gray>Open trait profile."
     action: open-profile
+  unlocked-abilities:
+    slot: 43
+    icon:
+      material: ENCHANTED_BOOK
+    name: "<abilities_button>"
+    lore:
+      - "<abilities_button_lore>"
+    action: open-abilities
 templates:
   skill:
     slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22]
@@ -37,4 +45,6 @@ templates:
       - "<gray>Level: <white><level>/<max_level></white>"
       - "<gray>XP: <white><xp>/<xp_required></white>"
       - "<gray><progress_bar> <xp_percent>%</gray>"
+      - ""
+      - "<ability_summary_lines>"
     action: open-skill

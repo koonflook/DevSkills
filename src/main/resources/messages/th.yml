@@ -8,9 +8,25 @@ plugin:
   unknown-skill: "<prefix><red>ไม่พบสกิล: <white><skill></white>"
   unknown-trait: "<prefix><red>ไม่พบคุณลักษณะ: <white><trait></white>"
   invalid-number: "<prefix><red>ตัวเลขไม่ถูกต้อง: <white><value></white>"
+  invalid-positive: "<prefix><red>ค่าต้องมากกว่า 0: <white><value></white>"
+  invalid-nonnegative: "<prefix><red>ค่าต้องตั้งแต่ 0 ขึ้นไป: <white><value></white>"
   admin-success: "<prefix><green>อัปเดต <white><player></white> แล้ว"
   admin-usage: "<prefix><yellow>วิธีใช้: <white><usage></white>"
   toggle: "<prefix><green><setting> เป็น <white><value></white> แล้ว"
+mana-ability:
+  activated: "<prefix><green>เปิดใช้งานสกิล <white><ability></white> แล้ว!"
+  unlocked: "<aqua>ปลดล็อกสกิลมานา: <white><ability></white>"
+  names:
+    replenish: "ฟื้นฟูพืชผล"
+    treecapitator: "โค่นต้นไม้"
+    speed_mine: "เร่งความเร็วการขุด"
+    sharp_hook: "เบ็ดพิฆาต"
+    terraform: "ปรับสภาพพื้นดิน"
+    charged_shot: "ศรอัดพลัง"
+    absorption: "เกราะป้องกัน"
+    lightning_blade: "คมดาบสายฟ้า"
+passive-ability:
+  unlocked: "<aqua>ปลดล็อกสกิลติดตัว: <white><ability></white>"
 xp:
   actionbar: "<green>+<amount> <skill> XP</green> <gray>[<progress_bar>] <xp_percent>%</gray>"
   bossbar: "<skill>: <level>/<max_level> - <xp_percent>%"

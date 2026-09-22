@@ -14,7 +14,26 @@ items:
       - "<gray>Level: <white><level>/<max_level></white>"
       - "<gray>XP: <white><xp>/<xp_required></white>"
       - "<gray><progress_bar> <xp_percent>%</gray>"
+      - ""
+      - "<ability_summary_lines>"
     action: none
+  sources:
+    slot: 8
+    icon:
+      material: BOOK
+    name: "<source_button>"
+    lore:
+      - "<source_button_lore>"
+    action: open-sources
+  abilities:
+    slot: 0
+    icon:
+      material: ENCHANTED_BOOK
+    name: "<aqua>ความสามารถของสายนี้"
+    lore:
+      - "<gray>ดูสกิลติดตัวและสกิลมานา"
+      - "<gray>ของสาย <white><skill></white>"
+    action: open-ability-categories
   previous-page:
     slot: 45
     icon:
@@ -46,6 +65,7 @@ templates:
     lore:
       - "<gray>Status: <white><status></white>"
       - "<reward_lines>"
+      - "<ability_lines>"
     action: none
   completed:
     icon:
@@ -55,6 +75,7 @@ templates:
       - "<gray>Status: <green><status></green>"
       - "<gray>Progress: <white><level_progress>%</white>"
       - "<reward_lines>"
+      - "<ability_lines>"
     action: none
   current:
     icon:
@@ -64,6 +85,7 @@ templates:
       - "<gray>Status: <yellow><status></yellow>"
       - "<gray>Progress: <white><level_progress>%</white>"
       - "<reward_lines>"
+      - "<ability_lines>"
     action: none
   locked:
     icon:
@@ -72,4 +94,5 @@ templates:
     lore:
       - "<gray>Status: <dark_gray><status></dark_gray>"
       - "<reward_lines>"
+      - "<ability_lines>"
     action: none

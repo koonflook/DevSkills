@@ -14,16 +14,21 @@ import com.Teenkung.devSkills.integration.CumulusFormBridge;
 import com.Teenkung.devSkills.integration.DevSkillsPlaceholderResolver;
 import com.Teenkung.devSkills.integration.FloodgateBridge;
 import com.Teenkung.devSkills.integration.MythicLibStatBridge;
+import com.Teenkung.devSkills.integration.MMOCoreManaProvider;
 import com.Teenkung.devSkills.integration.PaperDialogBridge;
 import com.Teenkung.devSkills.integration.PlaceholderApiBridge;
 import com.Teenkung.devSkills.integration.ProtocolLibActionBarBridge;
 import com.Teenkung.devSkills.listener.BlockSkillListener;
 import com.Teenkung.devSkills.listener.CombatSkillListener;
+import com.Teenkung.devSkills.listener.ManaAbilityListener;
+import com.Teenkung.devSkills.listener.PassiveAbilityListener;
 import com.Teenkung.devSkills.listener.PlayerLifecycleListener;
 import com.Teenkung.devSkills.listener.SpecialSkillListener;
 import com.Teenkung.devSkills.service.DevSkillApiImpl;
 import com.Teenkung.devSkills.service.HudService;
 import com.Teenkung.devSkills.service.LevelerService;
+import com.Teenkung.devSkills.service.ManaAbilityService;
+import com.Teenkung.devSkills.service.PassiveAbilityService;
 import com.Teenkung.devSkills.service.ProfileService;
 import com.Teenkung.devSkills.service.RewardService;
 import com.Teenkung.devSkills.service.SourceService;
@@ -59,7 +64,10 @@ public final class DevSkills extends JavaPlugin {
     private LevelerService levelerService;
     private TraitService traitService;
     private RewardService rewardService;
+    private ManaAbilityService manaAbilityService;
+    private PassiveAbilityService passiveAbilityService;
     private MythicLibStatBridge mythicLibStatBridge;
+    private MMOCoreManaProvider manaProvider;
     private FloodgateBridge floodgateBridge;
     private CumulusFormBridge cumulusFormBridge;
     private MenuManager menuManager;
@@ -79,6 +87,19 @@ public final class DevSkills extends JavaPlugin {
         if (Bukkit.getPluginManager().getPlugin("MythicLib") == null
                 || !Bukkit.getPluginManager().isPluginEnabled("MythicLib")) {
             getLogger().severe("An enabled, compatible MythicLib is required. DevSkills is disabling.");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
+        if (Bukkit.getPluginManager().getPlugin("MMOCore") == null
+                || !Bukkit.getPluginManager().isPluginEnabled("MMOCore")) {
+            getLogger().severe("An enabled, compatible MMOCore is required. DevSkills is disabling.");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
+        try {
+            manaProvider = new MMOCoreManaProvider(this);
+        } catch (RuntimeException exception) {
+            getLogger().severe("Unable to initialize the MMOCore mana provider: " + exception.getMessage());
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
@@ -203,6 +224,18 @@ public final class DevSkills extends JavaPlugin {
 
     public MythicLibStatBridge mythicLibStatBridge() {
         return mythicLibStatBridge;
+    }
+
+    public MMOCoreManaProvider manaProvider() {
+        return manaProvider;
+    }
+
+    public ManaAbilityService manaAbilityService() {
+        return manaAbilityService;
+    }
+
+    public PassiveAbilityService passiveAbilityService() {
+        return passiveAbilityService;
     }
 
     public CompletableFuture<Void> reloadRuntime() {
@@ -338,6 +371,8 @@ public final class DevSkills extends JavaPlugin {
                 nextSounds,
                 nextHud
         );
+        ManaAbilityService nextManaAbilities = new ManaAbilityService(this);
+        PassiveAbilityService nextPassiveAbilities = new PassiveAbilityService(this);
         PlacedBlockTracker nextPlacedBlocks = new PlacedBlockTracker(this, nextConfig.settings().placedBlockCapPerChunk());
 
         for (String issue : nextSources.auditIssues()) {
@@ -373,6 +408,8 @@ public final class DevSkills extends JavaPlugin {
         mythicLibStatBridge = nextMythicLib;
         profileService = nextProfiles;
         rewardService = nextRewards;
+        manaAbilityService = nextManaAbilities;
+        passiveAbilityService = nextPassiveAbilities;
         placeholderApiBridge = nextPlaceholderApi;
         hudService = nextHud;
         floodgateBridge = nextFloodgate;
@@ -413,6 +450,13 @@ public final class DevSkills extends JavaPlugin {
                 mythicLibStatBridge.clear(player);
             }
         }
+        if (manaAbilityService != null) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                manaAbilityService.clear(player);
+            }
+            manaAbilityService = null;
+        }
+        passiveAbilityService = null;
         if (profileService != null) {
             try {
                 profileService.shutdown();
@@ -516,5 +560,7 @@ public final class DevSkills extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new BlockSkillListener(this), this);
         Bukkit.getPluginManager().registerEvents(new CombatSkillListener(this), this);
         Bukkit.getPluginManager().registerEvents(new SpecialSkillListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new ManaAbilityListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new PassiveAbilityListener(this), this);
     }
 }

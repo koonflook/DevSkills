@@ -1,0 +1,66 @@
+passive-abilities:
+  bountiful_harvest: {skill: farming, action: crop_bonus_drop, display-name-th: "เก็บเกี่ยวอุดมสมบูรณ์", display-name-en: "Bountiful Harvest", base-value: 2, value-per-level: 2, unlock-level: 6, level-up: 10, max-ability-level: 10}
+  farmer: {skill: farming, action: crop_xp, display-name-th: "ชาวไร่", display-name-en: "Farmer", base-value: 2, value-per-level: 2, unlock-level: 16, level-up: 10, max-ability-level: 9}
+  scythe_master: {skill: farming, action: crop_bonus_drop, display-name-th: "ปรมาจารย์เคียว", display-name-en: "Scythe Master", base-value: 2, value-per-level: 2, unlock-level: 26, level-up: 10, max-ability-level: 8}
+  geneticist: {skill: farming, action: crop_growth, display-name-th: "นักปรับปรุงพันธุ์", display-name-en: "Geneticist", base-value: 2, value-per-level: 2, unlock-level: 36, level-up: 10, max-ability-level: 7}
+  growth_aura: {skill: farming, action: crop_growth, display-name-th: "ออร่าแห่งการเติบโต", display-name-en: "Growth Aura", base-value: 2, value-per-level: 2, unlock-level: 46, level-up: 10, max-ability-level: 6}
+
+  lumberjack: {skill: foraging, action: wood_bonus_drop, display-name-th: "คนตัดไม้", display-name-en: "Lumberjack", base-value: 2, value-per-level: 2, unlock-level: 6, level-up: 10, max-ability-level: 10}
+  forager: {skill: foraging, action: foraging_bonus_drop, display-name-th: "นักหาเสบียง", display-name-en: "Forager", base-value: 2, value-per-level: 2, unlock-level: 16, level-up: 10, max-ability-level: 9}
+  axe_master: {skill: foraging, action: axe_damage, display-name-th: "ปรมาจารย์ขวาน", display-name-en: "Axe Master", base-value: 2, value-per-level: 2, unlock-level: 26, level-up: 10, max-ability-level: 8}
+  valor: {skill: foraging, action: low_health_guard, display-name-th: "ความกล้าหาญ", display-name-en: "Valor", base-value: 2, value-per-level: 2, unlock-level: 36, level-up: 10, max-ability-level: 7}
+  shredder: {skill: foraging, action: leaf_bonus_drop, display-name-th: "ฉีกกระจาย", display-name-en: "Shredder", base-value: 2, value-per-level: 2, unlock-level: 46, level-up: 10, max-ability-level: 6}
+
+  lucky_miner: {skill: mining, action: mining_bonus_drop, display-name-th: "นักขุดผู้โชคดี", display-name-en: "Lucky Miner", base-value: 2, value-per-level: 2, unlock-level: 6, level-up: 10, max-ability-level: 10}
+  miner: {skill: mining, action: mining_xp, display-name-th: "นักขุด", display-name-en: "Miner", base-value: 2, value-per-level: 2, unlock-level: 16, level-up: 10, max-ability-level: 9}
+  pick_master: {skill: mining, action: pickaxe_haste, display-name-th: "ปรมาจารย์พลั่วขุด", display-name-en: "Pick Master", base-value: 2, value-per-level: 2, unlock-level: 26, level-up: 10, max-ability-level: 8}
+  stamina: {skill: mining, action: mining_hunger, display-name-th: "ความอึด", display-name-en: "Stamina", base-value: 2, value-per-level: 2, unlock-level: 36, level-up: 10, max-ability-level: 7}
+  hardened_armor: {skill: mining, action: mining_guard, display-name-th: "เกราะแกร่ง", display-name-en: "Hardened Armor", base-value: 2, value-per-level: 2, unlock-level: 46, level-up: 10, max-ability-level: 6}
+
+  lucky_catch: {skill: fishing, action: fish_bonus_drop, display-name-th: "เหยื่อแห่งโชค", display-name-en: "Lucky Catch", base-value: 2, value-per-level: 2, unlock-level: 6, level-up: 10, max-ability-level: 10}
+  fisher: {skill: fishing, action: fish_xp, display-name-th: "ชาวประมง", display-name-en: "Fisher", base-value: 2, value-per-level: 2, unlock-level: 16, level-up: 10, max-ability-level: 9}
+  treasure_hunter: {skill: fishing, action: fish_treasure, display-name-th: "นักล่าสมบัติ", display-name-en: "Treasure Hunter", base-value: 2, value-per-level: 2, unlock-level: 26, level-up: 10, max-ability-level: 8}
+  grappler: {skill: fishing, action: fish_pull, display-name-th: "ตะขอเกี่ยว", display-name-en: "Grappler", base-value: 2, value-per-level: 2, unlock-level: 36, level-up: 10, max-ability-level: 7}
+  epic_catch: {skill: fishing, action: fish_bonus_drop, display-name-th: "เหยื่อระดับตำนาน", display-name-en: "Epic Catch", base-value: 2, value-per-level: 2, unlock-level: 46, level-up: 10, max-ability-level: 6}
+
+  bigger_scoop: {skill: excavation, action: excavation_bonus_drop, display-name-th: "ตักได้มากขึ้น", display-name-en: "Bigger Scoop", base-value: 2, value-per-level: 2, unlock-level: 6, level-up: 10, max-ability-level: 10}
+  excavator: {skill: excavation, action: excavation_xp, display-name-th: "นักขุดค้น", display-name-en: "Excavator", base-value: 2, value-per-level: 2, unlock-level: 16, level-up: 10, max-ability-level: 9}
+  spade_master: {skill: excavation, action: shovel_haste, display-name-th: "ปรมาจารย์พลั่ว", display-name-en: "Spade Master", base-value: 2, value-per-level: 2, unlock-level: 26, level-up: 10, max-ability-level: 8}
+  metal_detector: {skill: excavation, action: excavation_bonus_drop, display-name-th: "เครื่องตรวจโลหะ", display-name-en: "Metal Detector", base-value: 2, value-per-level: 2, unlock-level: 36, level-up: 10, max-ability-level: 7}
+  lucky_spades: {skill: excavation, action: excavation_bonus_drop, display-name-th: "พลั่วนำโชค", display-name-en: "Lucky Spades", base-value: 2, value-per-level: 2, unlock-level: 46, level-up: 10, max-ability-level: 6}
+
+  retrieval: {skill: archery, action: bow_return, display-name-th: "เก็บศรกลับ", display-name-en: "Retrieval", base-value: 2, value-per-level: 2, unlock-level: 6, level-up: 10, max-ability-level: 10}
+  archer: {skill: archery, action: bow_damage, display-name-th: "นักธนู", display-name-en: "Archer", base-value: 2, value-per-level: 2, unlock-level: 16, level-up: 10, max-ability-level: 9}
+  bow_master: {skill: archery, action: bow_damage, display-name-th: "ปรมาจารย์ธนู", display-name-en: "Bow Master", base-value: 2, value-per-level: 2, unlock-level: 26, level-up: 10, max-ability-level: 8}
+  piercing: {skill: archery, action: bow_damage, display-name-th: "ศรเจาะเกราะ", display-name-en: "Piercing", base-value: 2, value-per-level: 2, unlock-level: 36, level-up: 10, max-ability-level: 7}
+  stun: {skill: archery, action: bow_stun, display-name-th: "ศรสยบ", display-name-en: "Stun", base-value: 2, value-per-level: 2, unlock-level: 46, level-up: 10, max-ability-level: 6}
+
+  shielding: {skill: defense, action: defense_guard, display-name-th: "กำแพงโล่", display-name-en: "Shielding", base-value: 2, value-per-level: 2, unlock-level: 6, level-up: 10, max-ability-level: 10}
+  defender: {skill: defense, action: defense_guard, display-name-th: "ผู้พิทักษ์", display-name-en: "Defender", base-value: 2, value-per-level: 2, unlock-level: 16, level-up: 10, max-ability-level: 9}
+  mob_master: {skill: defense, action: mob_guard, display-name-th: "ผู้ชำนาญมอนสเตอร์", display-name-en: "Mob Master", base-value: 2, value-per-level: 2, unlock-level: 26, level-up: 10, max-ability-level: 8}
+  immunity: {skill: defense, action: debuff_resist, display-name-th: "ภูมิคุ้มกัน", display-name-en: "Immunity", base-value: 2, value-per-level: 2, unlock-level: 36, level-up: 10, max-ability-level: 7}
+  no_debuff: {skill: defense, action: debuff_resist, display-name-th: "ไร้สถานะลบ", display-name-en: "No Debuff", base-value: 2, value-per-level: 2, unlock-level: 46, level-up: 10, max-ability-level: 6}
+
+  parry: {skill: fighting, action: parry, display-name-th: "ปัดป้อง", display-name-en: "Parry", base-value: 2, value-per-level: 2, unlock-level: 6, level-up: 10, max-ability-level: 10}
+  fighter: {skill: fighting, action: melee_damage, display-name-th: "นักสู้", display-name-en: "Fighter", base-value: 2, value-per-level: 2, unlock-level: 16, level-up: 10, max-ability-level: 9}
+  sword_master: {skill: fighting, action: melee_damage, display-name-th: "ปรมาจารย์ดาบ", display-name-en: "Sword Master", base-value: 2, value-per-level: 2, unlock-level: 26, level-up: 10, max-ability-level: 8}
+  first_strike: {skill: fighting, action: first_hit, display-name-th: "จู่โจมแรก", display-name-en: "First Strike", base-value: 2, value-per-level: 2, unlock-level: 36, level-up: 10, max-ability-level: 7}
+  bleed: {skill: fighting, action: bleed, display-name-th: "บาดแผลเลือดไหล", display-name-en: "Bleed", base-value: 2, value-per-level: 2, unlock-level: 46, level-up: 10, max-ability-level: 6}
+
+  anti_hunger: {skill: agility, action: hunger_save, display-name-th: "ต้านทานความหิว", display-name-en: "Anti Hunger", base-value: 2, value-per-level: 2, unlock-level: 6, level-up: 10, max-ability-level: 10}
+  runner: {skill: agility, action: sprint_speed, display-name-th: "นักวิ่ง", display-name-en: "Runner", base-value: 2, value-per-level: 2, unlock-level: 16, level-up: 10, max-ability-level: 9}
+  golden_heal: {skill: agility, action: golden_heal, display-name-th: "ฟื้นฟูทองคำ", display-name-en: "Golden Heal", base-value: 2, value-per-level: 2, unlock-level: 26, level-up: 10, max-ability-level: 8}
+  recovery: {skill: agility, action: heal_bonus, display-name-th: "ฟื้นคืน", display-name-en: "Recovery", base-value: 2, value-per-level: 2, unlock-level: 36, level-up: 10, max-ability-level: 7}
+  meal_steal: {skill: agility, action: consume_heal, display-name-th: "มื้อฟื้นกำลัง", display-name-en: "Meal Steal", base-value: 2, value-per-level: 2, unlock-level: 46, level-up: 10, max-ability-level: 6}
+
+  alchemist: {skill: alchemy, action: potion_drink, display-name-th: "นักเล่นแร่แปรธาตุ", display-name-en: "Alchemist", base-value: 2, value-per-level: 2, unlock-level: 6, level-up: 10, max-ability-level: 10}
+  brewer: {skill: alchemy, action: brew_bonus, display-name-th: "นักปรุงยา", display-name-en: "Brewer", base-value: 2, value-per-level: 2, unlock-level: 16, level-up: 10, max-ability-level: 9}
+  splasher: {skill: alchemy, action: splash_power, display-name-th: "ระเบิดยา", display-name-en: "Splasher", base-value: 2, value-per-level: 2, unlock-level: 26, level-up: 10, max-ability-level: 8}
+  lingering: {skill: alchemy, action: lingering_power, display-name-th: "ฤทธิ์ตกค้าง", display-name-en: "Lingering", base-value: 2, value-per-level: 2, unlock-level: 36, level-up: 10, max-ability-level: 7}
+  wise_effect: {skill: alchemy, action: potion_duration, display-name-th: "ฤทธิ์อันชาญฉลาด", display-name-en: "Wise Effect", base-value: 2, value-per-level: 2, unlock-level: 46, level-up: 10, max-ability-level: 6}
+
+  xp_convert: {skill: enchanting, action: enchant_discount, display-name-th: "แปลงพลัง XP", display-name-en: "XP Convert", base-value: 2, value-per-level: 2, unlock-level: 6, level-up: 10, max-ability-level: 10}
+  enchanter: {skill: enchanting, action: enchant_xp, display-name-th: "นักร่ายมนตร์", display-name-en: "Enchanter", base-value: 2, value-per-level: 2, unlock-level: 16, level-up: 10, max-ability-level: 9}
+  xp_warrior: {skill: enchanting, action: enchant_damage, display-name-th: "นักรบพลัง XP", display-name-en: "XP Warrior", base-value: 2, value-per-level: 2, unlock-level: 26, level-up: 10, max-ability-level: 8}
+  enchanted_strength: {skill: enchanting, action: enchant_damage, display-name-th: "พลังแห่งมนตร์", display-name-en: "Enchanted Strength", base-value: 2, value-per-level: 2, unlock-level: 36, level-up: 10, max-ability-level: 7}
+  lucky_table: {skill: enchanting, action: enchant_refund, display-name-th: "โต๊ะมนตร์นำโชค", display-name-en: "Lucky Table", base-value: 2, value-per-level: 2, unlock-level: 46, level-up: 10, max-ability-level: 6}

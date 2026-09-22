@@ -1,0 +1,119 @@
+title: "<aqua><ability_type> <gray>— <white><ability_scope></white> <dark_gray>(<page>/<max_page>)"
+size: 54
+fill:
+  icon:
+    material: BLACK_STAINED_GLASS_PANE
+  name: " "
+items:
+  summary:
+    slot: 4
+    icon:
+      material: ENCHANTED_BOOK
+    name: "<aqua><ability_type>"
+    lore:
+      - "<gray>สายสกิล: <white><ability_scope></white>"
+      - "<gray>แสดงเฉพาะประเภทที่เลือก"
+      - "<green>✔ ปลดล็อกแล้ว <gray>| <red>✘ ยังไม่ปลดล็อก"
+    action: none
+  previous-page:
+    slot: 45
+    icon:
+      material: ARROW
+    name: "<yellow>ก่อนหน้า"
+    lore:
+      - "<gray><page>/<max_page></gray>"
+    action: previous-page
+  empty:
+    slot: 22
+    icon:
+      material: BARRIER
+    name: "<yellow>ยังไม่มีความสามารถ"
+    lore:
+      - "<gray>ไม่พบความสามารถที่ตั้งค่าไว้"
+    action: none
+  back:
+    slot: 49
+    icon:
+      material: BARRIER
+    name: "<yellow>กลับ"
+    lore: []
+    action: open-skills
+  next-page:
+    slot: 53
+    icon:
+      material: ARROW
+    name: "<yellow>ถัดไป"
+    lore:
+      - "<gray><page>/<max_page></gray>"
+    action: next-page
+templates:
+  entry:
+    slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43]
+    icon:
+      material: ENCHANTED_BOOK
+    name: "<aqua><ability></aqua> <dark_gray>[<ability_type>]</dark_gray>"
+    lore:
+      - "<gray>สายสกิล: <white><skill></white>"
+      - "<gray>ระดับความสามารถ: <white><ability_level></white> <ability_maxed>"
+      - "<gray>ปลดล็อกที่เลเวล: <white><unlock_level></white>"
+      - "<gray>สถานะ: <ability_status>"
+      - ""
+      - "<white><ability_description></white>"
+      - "<yellow><ability_detail></yellow>"
+    action: none
+  locked-passive:
+    slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43]
+    icon:
+      material: GRAY_DYE
+    name: "<red>✘ <dark_gray><strikethrough><ability></strikethrough></dark_gray>"
+    lore:
+      - "<gray>ประเภท: <white><ability_type></white>"
+      - "<gray>สายสกิล: <white><skill></white>"
+      - "<gray>สถานะ: <ability_status>"
+      - "<gray>ปลดล็อกที่เลเวล: <aqua><unlock_level></aqua>"
+      - ""
+      - "<white><ability_description></white>"
+    action: none
+  locked-mana:
+    slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43]
+    icon:
+      material: GRAY_DYE
+    name: "<red>✘ <dark_gray><strikethrough><ability></strikethrough></dark_gray>"
+    lore:
+      - "<gray>ประเภท: <white><ability_type></white>"
+      - "<gray>สายสกิล: <white><skill></white>"
+      - "<gray>สถานะ: <ability_status>"
+      - "<gray>ปลดล็อกที่เลเวล: <aqua><unlock_level></aqua>"
+      - ""
+      - "<white><ability_description></white>"
+    action: none
+  unlocked-passive:
+    slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43]
+    icon:
+      material: LIGHT_BLUE_DYE
+    name: "<green>✔ <aqua><ability></aqua>"
+    lore:
+      - "<gray>ประเภท: <white><ability_type></white>"
+      - "<gray>สายสกิล: <white><skill></white>"
+      - "<gray>ระดับความสามารถ: <aqua><ability_level></aqua> <ability_maxed>"
+      - "<gray>ปลดล็อกแล้วที่เลเวล: <aqua><unlock_level></aqua>"
+      - "<gray>สถานะ: <ability_status>"
+      - ""
+      - "<white><ability_description></white>"
+      - "<yellow><ability_detail></yellow>"
+    action: none
+  unlocked-mana:
+    slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43]
+    icon:
+      material: MAGENTA_DYE
+    name: "<green>✔ <light_purple><ability></light_purple>"
+    lore:
+      - "<gray>ประเภท: <white><ability_type></white>"
+      - "<gray>สายสกิล: <white><skill></white>"
+      - "<gray>ระดับความสามารถ: <light_purple><ability_level></light_purple>"
+      - "<gray>ปลดล็อกแล้วที่เลเวล: <aqua><unlock_level></aqua>"
+      - "<gray>สถานะ: <ability_status>"
+      - ""
+      - "<white><ability_description></white>"
+      - "<yellow><ability_detail></yellow>"
+    action: none

@@ -1,0 +1,105 @@
+mana-abilities:
+  replenish:
+    skill: farming
+    action: replenish
+    base-value: 5
+    value-per-level: 5
+    base-cost: 20
+    cost-per-level: 5
+    base-cooldown-ticks: 200
+    cooldown-per-level: -5
+    unlock-level: 6
+    level-up: 6
+    duration-ticks: 100
+    max-blocks: 1
+  treecapitator:
+    skill: foraging
+    action: treecapitator
+    base-value: 5
+    value-per-level: 5
+    base-cost: 20
+    cost-per-level: 5
+    base-cooldown-ticks: 200
+    cooldown-per-level: -5
+    unlock-level: 6
+    level-up: 6
+    duration-ticks: 100
+    max-blocks: 64
+  speed_mine:
+    skill: mining
+    action: speed_mine
+    base-value: 10
+    value-per-level: 5
+    base-cost: 20
+    cost-per-level: 5
+    base-cooldown-ticks: 200
+    cooldown-per-level: -5
+    unlock-level: 6
+    level-up: 6
+    duration-ticks: 100
+    max-blocks: 1
+  sharp_hook:
+    skill: fishing
+    action: sharp_hook
+    base-value: 0.5
+    value-per-level: 0.5
+    base-cost: 5
+    cost-per-level: 5
+    base-cooldown-ticks: 2
+    cooldown-per-level: 0
+    unlock-level: 6
+    level-up: 6
+    duration-ticks: 40
+    max-blocks: 1
+  terraform:
+    skill: excavation
+    action: terraform
+    base-value: 5
+    value-per-level: 4
+    base-cost: 20
+    cost-per-level: 5
+    base-cooldown-ticks: 200
+    cooldown-per-level: -5
+    unlock-level: 6
+    level-up: 6
+    duration-ticks: 100
+    max-blocks: 61
+  charged_shot:
+    skill: archery
+    action: charged_shot
+    base-value: 0.5
+    value-per-level: 0.1
+    base-cost: 10
+    cost-per-level: 5
+    base-cooldown-ticks: 0
+    cooldown-per-level: 0
+    unlock-level: 6
+    level-up: 6
+    duration-ticks: 100
+    max-blocks: 1
+  absorption:
+    skill: defense
+    action: absorption
+    base-value: 2
+    value-per-level: 1
+    base-cost: 10
+    cost-per-level: 5
+    base-cooldown-ticks: 200
+    cooldown-per-level: -5
+    unlock-level: 6
+    level-up: 6
+    duration-ticks: 100
+    max-blocks: 1
+  lightning_blade:
+    skill: fighting
+    action: lightning_blade
+    base-value: 5
+    value-per-level: 5
+    base-cost: 20
+    cost-per-level: 5
+    base-cooldown-ticks: 400
+    cooldown-per-level: 0
+    unlock-level: 6
+    level-up: 6
+    duration-ticks: 20
+    max-blocks: 1

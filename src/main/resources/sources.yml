@@ -73,8 +73,8 @@ excavation:
     PODZOL: 1.2
     MYCELIUM: 1.2
     MUD: 1.1
-    SOUL_SAND: 1.2
-    SOUL_SOIL: 1.2
+    SOUL_SAND: 0.0
+    SOUL_SOIL: 0.0
     SNOW_BLOCK: 1.0
     POWDER_SNOW: 1.0
 fishing:
@@ -99,6 +99,12 @@ fighting:
 archery:
   entity:
     DEFAULT: 2.0
+    ZOMBIE: 2.0
+    SKELETON: 2.0
+    CREEPER: 3.0
+    SPIDER: 2.0
+    ENDERMAN: 6.0
+    WARDEN: 8.0
 defense:
   entity:
     DEFAULT: 1.5

@@ -1,0 +1,45 @@
+title: "<aqua>ความสามารถ <gray>— <white><ability_scope></white>"
+size: 54
+fill:
+  icon:
+    material: BLACK_STAINED_GLASS_PANE
+  name: " "
+items:
+  summary:
+    slot: 4
+    icon:
+      material: ENCHANTED_BOOK
+    name: "<aqua>เลือกประเภทความสามารถ"
+    lore:
+      - "<gray>สายสกิล: <white><ability_scope></white>"
+      - "<gray>เลือกประเภทที่ต้องการตรวจสอบ"
+    action: none
+  passive:
+    slot: 21
+    icon:
+      material: LIGHT_BLUE_DYE
+    name: "<aqua>สกิลติดตัว"
+    lore:
+      - "<gray>ความสามารถที่ทำงานอัตโนมัติ"
+      - "<gray>จำนวน: <white><passive_count></white> ความสามารถ"
+      - ""
+      - "<yellow>คลิกเพื่อดูสถานะ"
+    action: open-ability-type
+  mana:
+    slot: 23
+    icon:
+      material: MAGENTA_DYE
+    name: "<light_purple>สกิลมานา"
+    lore:
+      - "<gray>ความสามารถที่ต้องใช้มานา"
+      - "<gray>จำนวน: <white><mana_count></white> ความสามารถ"
+      - ""
+      - "<yellow>คลิกเพื่อดูสถานะ"
+    action: open-ability-type
+  back:
+    slot: 49
+    icon:
+      material: BARRIER
+    name: "<yellow>กลับ"
+    lore: []
+    action: open-skills
